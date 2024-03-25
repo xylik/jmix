@@ -41,7 +41,7 @@ public interface StudioPreviewComponentLoader {
     /**
      * Define the element that this loader can load.
      */
-    boolean isSuitable(Element elements);
+    boolean isSupported(Element element);
 
     /**
      * Create vaadin component from component xml element.

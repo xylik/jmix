@@ -49,6 +49,7 @@ import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 
 /**
  * Used in Studio.
+ * Do not rename or refactor.
  * <p>
  *     Finds a suitable {@link StudioPreviewComponentLoader loader} for component tag
  *     and invoke {@link StudioPreviewComponentLoader#load(Element, Element) load method}
@@ -63,9 +64,11 @@ final class StudioPreviewComponentProvider {
 
     /**
      * Used in Studio.
+     *
+     * @param tagLocalName xml tag name without namespace.
      */
-    static boolean canCreateComponent(String tagLocaleName, String namespaceUri) {
-        final Element element = new BaseElement(tagLocaleName, Namespace.get(namespaceUri));
+    static boolean canCreateComponent(String tagLocalName, String namespaceUri) {
+        final Element element = new BaseElement(tagLocalName, Namespace.get(namespaceUri));
         return findComponentLoader(element).isPresent();
     }
 
@@ -95,7 +98,7 @@ final class StudioPreviewComponentProvider {
     }
 
     private static Optional<StudioPreviewComponentLoader> findComponentLoader(final Element element) {
-        return getLoaderServices().stream().filter(loader -> loader.isSuitable(element)).findFirst();
+        return getLoaderServices().stream().filter(loader -> loader.isSupported(element)).findFirst();
     }
 
     private static Collection<StudioPreviewComponentLoader> getLoaderServices() {
