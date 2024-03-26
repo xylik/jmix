@@ -26,6 +26,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.tabs.TabSheet;
 import io.jmix.flowui.kit.meta.StudioComponent;
+import io.jmix.flowui.kit.meta.StudioConvertStrategy;
 import io.jmix.flowui.kit.meta.StudioProperty;
 import io.jmix.flowui.kit.meta.StudioPropertyType;
 import io.jmix.flowui.kit.meta.StudioUiKit;
@@ -75,6 +76,12 @@ public interface StudioLayouts {
             xmlElement = "hbox",
             icon = "io/jmix/flowui/kit/meta/icon/layout/hbox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/layouts/hbox.html",
+            convertStrategy = @StudioConvertStrategy(
+                    suitableComponentTagsToConvertInto = {
+                            "vbox", "hbox", "scroller",
+                            "flexLayout", "formLayout"
+                    }
+            ),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
