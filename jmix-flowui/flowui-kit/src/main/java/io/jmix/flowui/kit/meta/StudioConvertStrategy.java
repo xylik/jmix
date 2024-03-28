@@ -18,7 +18,29 @@ package io.jmix.flowui.kit.meta;
 
 public @interface StudioConvertStrategy {
 
-    String[] suitableComponentTagsToConvertInto() default {};
+    TagInfo[] tagsToConvertInto() default {};
 
-    String[] suitableComponentClassesToConvertInto() default {};
+    ClassInfo[] classesToConvertInto() default {};
+
+    @interface ClassInfo {
+        String qualifiedName();
+
+        AttributeConvertStrategy[] attributeConvertStrategy() default {};
+    }
+
+    @interface TagInfo {
+        String qualifiedName();
+
+        AttributeConvertStrategy[] attributeConvertStrategy() default {};
+    }
+
+    @interface AttributeConvertStrategy {
+        String qualifiedName();
+
+        StudioPropertyType type();
+
+        String value();
+
+        String valueFrom() default "";
+    }
 }

@@ -77,9 +77,18 @@ public interface StudioLayouts {
             icon = "io/jmix/flowui/kit/meta/icon/layout/hbox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/layouts/hbox.html",
             convertStrategy = @StudioConvertStrategy(
-                    suitableComponentTagsToConvertInto = {
-                            "vbox", "hbox", "scroller",
-                            "flexLayout", "formLayout"
+                    tagsToConvertInto = {
+                            @StudioConvertStrategy.TagInfo(qualifiedName = "div"),
+                            @StudioConvertStrategy.TagInfo(qualifiedName = "vbox",
+                                    attributeConvertStrategy = {
+                                    @StudioConvertStrategy.AttributeConvertStrategy(
+                                            qualifiedName = "padding",
+                                            value = "true",
+                                            type = StudioPropertyType.BOOLEAN
+                                    )
+                            }),
+                            @StudioConvertStrategy.TagInfo(qualifiedName = "flexLayout"),
+                            @StudioConvertStrategy.TagInfo(qualifiedName = "formLayout"),
                     }
             ),
             properties = {
