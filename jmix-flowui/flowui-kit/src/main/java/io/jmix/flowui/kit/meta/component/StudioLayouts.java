@@ -211,7 +211,6 @@ public interface StudioLayouts {
                     @StudioConvertStrategy.TagInfo(qualifiedName = "hbox"),
                     @StudioConvertStrategy.TagInfo(qualifiedName = "vbox"),
                     @StudioConvertStrategy.TagInfo(qualifiedName = "details"),
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "flexLayout"),
                     @StudioConvertStrategy.TagInfo(qualifiedName = "formLayout"),
             }),
             properties = {
@@ -382,13 +381,6 @@ public interface StudioLayouts {
             xmlElement = "formLayout",
             icon = "io/jmix/flowui/kit/meta/icon/layout/formLayout.svg",
             documentationLink = "%VERSION%/flow-ui/vc/layouts/formLayout.html",
-            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "div"),
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "hbox"),
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "vbox"),
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "details"),
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "flexLayout")
-            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -423,9 +415,6 @@ public interface StudioLayouts {
             xmlElement = "tabSheet",
             icon = "io/jmix/flowui/kit/meta/icon/component/tabSheet.svg",
             documentationLink = "%VERSION%/flow-ui/vc/layouts/tabSheet.html",
-            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
-                    @StudioConvertStrategy.TagInfo(qualifiedName = "tabs")
-            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
