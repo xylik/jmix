@@ -103,6 +103,10 @@ public interface StudioComponents {
             xmlElement = "icon",
             icon = "io/jmix/flowui/kit/meta/icon/component/icon.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/icon.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "svgIcon"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "fontIcon"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -128,6 +132,10 @@ public interface StudioComponents {
             category = "Components",
             xmlElement = "svgIcon",
             icon = "io/jmix/flowui/kit/meta/icon/component/svgIcon.svg",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "icon"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "fontIcon")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -154,6 +162,10 @@ public interface StudioComponents {
             category = "Components",
             xmlElement = "fontIcon",
             icon = "io/jmix/flowui/kit/meta/icon/component/fontIcon.svg",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "icon"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "svgIcon")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -183,6 +195,9 @@ public interface StudioComponents {
             xmlElement = "bigDecimalField",
             icon = "io/jmix/flowui/kit/meta/icon/component/bigDecimalField.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/bigDecimalField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -267,6 +282,10 @@ public interface StudioComponents {
             xmlElement = "button",
             icon = "io/jmix/flowui/kit/meta/icon/component/button.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/button.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "dropdownButton"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboButton"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -319,6 +338,9 @@ public interface StudioComponents {
             xmlElement = "checkboxGroup",
             icon = "io/jmix/flowui/kit/meta/icon/component/checkBoxGroup.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/checkBoxGroup.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -431,6 +453,15 @@ public interface StudioComponents {
             xmlElement = "comboBox",
             icon = "io/jmix/flowui/kit/meta/icon/component/comboBox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/comboBox.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectListBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -508,6 +539,15 @@ public interface StudioComponents {
             xmlElement = "multiSelectComboBox",
             icon = "io/jmix/flowui/kit/meta/icon/component/comboBox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/multiSelectComboBox.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectListBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -588,6 +628,15 @@ public interface StudioComponents {
             xmlElement = "multiSelectComboBoxPicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/comboBox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/multiSelectComboBoxPicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectListBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -668,6 +717,10 @@ public interface StudioComponents {
             xmlElement = "dropdownButton",
             icon = "io/jmix/flowui/kit/meta/icon/component/dropdownButton.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/dropdownButton.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "button"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboButton"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -715,6 +768,10 @@ public interface StudioComponents {
             xmlElement = "comboButton",
             icon = "io/jmix/flowui/kit/meta/icon/component/comboButton.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/comboButton.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "button"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "dropdownButton"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -762,6 +819,10 @@ public interface StudioComponents {
             xmlElement = "datePicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/datePicker.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/datePicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "timePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "dateTimePicker")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -834,6 +895,10 @@ public interface StudioComponents {
             xmlElement = "dateTimePicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/datePicker.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/dateTimePicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "datePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "timePicker")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -935,6 +1000,9 @@ public interface StudioComponents {
             xmlElement = "emailField",
             icon = "io/jmix/flowui/kit/meta/icon/component/emailField.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/emailField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1023,6 +1091,12 @@ public interface StudioComponents {
             xmlElement = "entityComboBox",
             icon = "io/jmix/flowui/kit/meta/icon/component/entityComboBox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/entityComboBox.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "entityPicker")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1102,6 +1176,12 @@ public interface StudioComponents {
             xmlElement = "entityPicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/entityPicker.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/entityPicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "entityComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1162,6 +1242,9 @@ public interface StudioComponents {
             xmlElement = "dataGrid",
             icon = "io/jmix/flowui/kit/meta/icon/component/dataGrid.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/dataGrid.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "treeDataGrid")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1242,6 +1325,9 @@ public interface StudioComponents {
             xmlElement = "treeDataGrid",
             icon = "io/jmix/flowui/kit/meta/icon/component/treeDataGrid.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/treeDataGrid.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "dataGrid")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1325,6 +1411,10 @@ public interface StudioComponents {
             xmlElement = "integerField",
             icon = "io/jmix/flowui/kit/meta/icon/component/integerField.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/integerField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "numberField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1414,6 +1504,10 @@ public interface StudioComponents {
             xmlElement = "numberField",
             icon = "io/jmix/flowui/kit/meta/icon/component/numberField.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/numberField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "integerField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1504,6 +1598,9 @@ public interface StudioComponents {
             xmlElement = "passwordField",
             icon = "io/jmix/flowui/kit/meta/icon/component/passwordField.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/passwordField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1686,6 +1783,16 @@ public interface StudioComponents {
             xmlElement = "select",
             icon = "io/jmix/flowui/kit/meta/icon/component/select.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/select.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectListBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "entityComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1765,6 +1872,9 @@ public interface StudioComponents {
             xmlElement = "tabs",
             icon = "io/jmix/flowui/kit/meta/icon/component/tabs.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/tabs.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "tabSheet")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1800,6 +1910,16 @@ public interface StudioComponents {
             xmlElement = "listBox",
             icon = "io/jmix/flowui/kit/meta/icon/component/listBox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/listBox.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectListBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "entityComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1844,6 +1964,15 @@ public interface StudioComponents {
             xmlElement = "multiSelectListBox",
             icon = "io/jmix/flowui/kit/meta/icon/component/listBox.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/multiSelectListBox.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "valuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1888,6 +2017,10 @@ public interface StudioComponents {
             xmlElement = "textArea",
             icon = "io/jmix/flowui/kit/meta/icon/component/textArea.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/textArea.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "richTextEditor")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -1974,6 +2107,15 @@ public interface StudioComponents {
             xmlElement = "textField",
             icon = "io/jmix/flowui/kit/meta/icon/component/textField.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/textField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textArea"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "richTextEditor"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "emailField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "passwordField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "numberField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "integerField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "bigDecimalField"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -2065,6 +2207,10 @@ public interface StudioComponents {
             xmlElement = "timePicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/timePicker.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/timePicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "datePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "dateTimePicker"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -2129,6 +2275,16 @@ public interface StudioComponents {
             xmlElement = "valuePicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/valuePicker.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/valuePicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiValuePicker"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "entityComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -2187,6 +2343,15 @@ public interface StudioComponents {
             xmlElement = "multiValuePicker",
             icon = "io/jmix/flowui/kit/meta/icon/component/multiValuePicker.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/multiValuePicker.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "select"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "listBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "radioButtonGroup"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "comboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "entityComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBox"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "multiSelectComboBoxPicker"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -2328,6 +2493,10 @@ public interface StudioComponents {
             xmlElement = "upload",
             icon = "io/jmix/flowui/kit/meta/icon/component/upload.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/upload.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "fileUploadField"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "fileStorageUploadField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -2371,6 +2540,10 @@ public interface StudioComponents {
             xmlElement = "fileUploadField",
             icon = "io/jmix/flowui/kit/meta/icon/component/upload.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/fileUploadField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "upload"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "fileStorageUploadField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -2438,6 +2611,10 @@ public interface StudioComponents {
             xmlElement = "fileStorageUploadField",
             icon = "io/jmix/flowui/kit/meta/icon/component/upload.svg",
             documentationLink = "%VERSION%/flow-ui/vc/components/fileStorageUploadField.html",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "upload"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "fileUploadField")
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "alignSelf", type = StudioPropertyType.ENUMERATION,
                             classFqn = "com.vaadin.flow.component.orderedlayout.FlexComponent$Alignment",
@@ -3015,6 +3192,10 @@ public interface StudioComponents {
             category = "Components",
             xmlElement = "richTextEditor",
             icon = "io/jmix/flowui/kit/meta/icon/component/richTextEditor.svg",
+            convertStrategy = @StudioConvertStrategy(tagsToConvertInto = {
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textArea"),
+                    @StudioConvertStrategy.TagInfo(qualifiedName = "textField"),
+            }),
             properties = {
                     @StudioProperty(xmlAttribute = "id", type = StudioPropertyType.COMPONENT_ID),
                     @StudioProperty(xmlAttribute = "visible", type = StudioPropertyType.BOOLEAN,
