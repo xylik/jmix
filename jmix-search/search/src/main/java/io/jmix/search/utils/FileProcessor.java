@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 import java.io.StringWriter;
 
-@Component("search_FileProcessor")
+@Component
 public class FileProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(FileProcessor.class);
