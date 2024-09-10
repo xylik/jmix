@@ -42,7 +42,7 @@ public class FileProcessor {
     private static final Logger log = LoggerFactory.getLogger(FileProcessor.class);
 
     protected FileStorageLocator fileStorageLocator;
-    private final FileParserResolver fileParserResolver;
+    protected FileParserResolver fileParserResolver;
 
     public FileProcessor(FileStorageLocator fileStorageLocator, FileParserResolver fileParserResolver) {
         this.fileStorageLocator = fileStorageLocator;
