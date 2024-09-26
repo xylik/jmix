@@ -22,6 +22,7 @@ import io.jmix.core.FileStorageLocator;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.search.exception.FileParseException;
 import io.jmix.search.exception.UnsupportedFileFormatException;
+import io.jmix.search.index.fileparsing.FileParsingBundle;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -53,12 +54,17 @@ public class FileProcessor {
         Preconditions.checkNotNullArgument(fileRef);
         log.debug("Extract content of file {}", fileRef);
         FileStorage fileStorage = fileStorageLocator.getByName(fileRef.getStorageName());
-        Parser parser = getParser(fileRef);
+        FileParsingBundle parsingBundle = getParsingBundle(fileRef);
+        Parser parser = parsingBundle.parser();
         log.debug("Parser for file {}: {}", fileRef, parser);
 
         StringWriter stringWriter = new StringWriter();
         try (InputStream stream = fileStorage.openStream(fileRef)) {
-            parser.parse(stream, new BodyContentHandler(stringWriter), new Metadata(), new ParseContext());
+            parser.parse(
+                    stream,
+                    parsingBundle.bodyContentHandlerGenerator().apply(stringWriter),
+                    parsingBundle.metadata(),
+                    parsingBundle.parseContext());
         } catch (OfficeXmlFileException e) {
             if (parser instanceof OfficeParser) {
                 parser = new OOXMLParser();
@@ -78,7 +84,7 @@ public class FileProcessor {
         return stringWriter.toString();
     }
 
-    protected Parser getParser(FileRef fileRef) throws UnsupportedFileFormatException {
-        return fileParserProvider.getParser(fileRef);
+    protected FileParsingBundle getParsingBundle(FileRef fileRef) throws UnsupportedFileFormatException {
+        return fileParserProvider.getParsingBundle(fileRef);
     }
 }
