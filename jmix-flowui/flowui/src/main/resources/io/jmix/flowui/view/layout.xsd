@@ -3038,6 +3038,15 @@
         </xs:complexContent>
     </xs:complexType>
 
+    <!-- GroupDataGrid-->
+    <!-- todo rp -->
+    <xs:complexType name="groupDataGridComponent">
+        <xs:complexContent>
+            <xs:extension base="dataGridComponent">
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
     <!-- TextField-->
     <xs:complexType name="textFieldComponent">
         <xs:complexContent>
@@ -4917,6 +4926,7 @@
                 <xs:element name="progressBar" type="progressBarComponent"/>
                 <xs:element name="dataGrid" type="dataGridComponent"/>
                 <xs:element name="treeDataGrid" type="treeDataGridComponent"/>
+                <xs:element name="groupDataGrid" type="groupDataGridComponent"/>
                 <xs:element name="loginForm" type="loginFormComponent"/>
                 <xs:element name="loginOverlay" type="loginOverlayComponent"/>
                 <xs:element name="simplePagination" type="simplePaginationComponent"/>

@@ -1,0 +1,56 @@
+/*
+ * Copyright 2025 Haulmont.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.jmix.flowui.xml.layout.loader.component;
+
+import io.jmix.flowui.component.grid.GroupDataGrid;
+import io.jmix.flowui.data.grid.ContainerGroupDataGridItems;
+import io.jmix.flowui.data.grid.EmptyGroupDataGridItems;
+import org.dom4j.Element;
+
+public class GroupDataGridLoader extends AbstractGridLoader<GroupDataGrid<?>> {
+
+    @Override
+    protected GroupDataGrid<?> createComponent() {
+        return factory.create(GroupDataGrid.class);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
+    protected void setupDataProvider(GridDataHolder holder) {
+        if (holder.getContainer() != null) {
+            resultComponent.setItems(new ContainerGroupDataGridItems(holder.getContainer()));
+        } else if (holder.getMetaClass() != null) {
+            resultComponent.setItems(new EmptyGroupDataGridItems<>(holder.getMetaClass()));
+        }
+    }
+
+    @Override
+    protected void loadActions() {
+        loadActionsAttributes();
+        super.loadActions();
+    }
+
+    protected void loadActionsAttributes() {
+        Element actions = element.element("actions");
+        if (actions == null) {
+            return;
+        }
+
+        loaderSupport.loadBoolean(actions, "showInContextMenuEnabled",
+                resultComponent.getActionsSupport()::setShowActionsInContextMenuEnabled);
+    }
+}

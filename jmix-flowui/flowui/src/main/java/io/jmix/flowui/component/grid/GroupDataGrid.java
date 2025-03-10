@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Haulmont.
+ * Copyright 2025 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,21 +31,18 @@ import com.vaadin.flow.shared.Registration;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
-import io.jmix.flowui.component.AggregationInfo;
-import io.jmix.flowui.component.ListDataComponent;
-import io.jmix.flowui.component.LookupComponent.MultiSelectLookupComponent;
-import io.jmix.flowui.component.SupportsEnterPress;
-import io.jmix.flowui.component.UiComponentUtils;
+import io.jmix.flowui.component.*;
 import io.jmix.flowui.component.delegate.AbstractGridDelegate;
-import io.jmix.flowui.component.delegate.GridDelegate;
+import io.jmix.flowui.component.delegate.GroupGridDelegate;
 import io.jmix.flowui.component.grid.editor.DataGridEditor;
 import io.jmix.flowui.component.grid.editor.DataGridEditorImpl;
+import io.jmix.flowui.data.DataUnit;
 import io.jmix.flowui.data.grid.DataGridItems;
+import io.jmix.flowui.data.grid.GroupDataGridItems;
 import io.jmix.flowui.fragment.FragmentUtils;
 import io.jmix.flowui.kit.component.KeyCombination;
-import io.jmix.flowui.kit.component.grid.GridActionsSupport;
-import io.jmix.flowui.kit.component.grid.JmixGrid;
-import io.jmix.flowui.kit.component.grid.JmixGridContextMenu;
+import io.jmix.flowui.kit.component.grid.*;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -55,18 +52,18 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, MultiSelectLookupComponent<E>,
-        EnhancedDataGrid<E>, SupportsEnterPress<DataGrid<E>>, ApplicationContextAware, InitializingBean {
+public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataComponent<E>, LookupComponent.MultiSelectLookupComponent<E>,
+        EnhancedDataGrid<E>, SupportsEnterPress<GroupDataGrid<E>>, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
 
-    protected GridDelegate<E, DataGridItems<E>> gridDelegate;
+    protected GroupGridDelegate<E, GroupDataGridItems<E>> gridDelegate;
     protected JmixGridContextMenu<E> contextMenu;
 
     protected boolean editorCreated = false;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
 
@@ -81,15 +78,10 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     @SuppressWarnings("unchecked")
-    protected GridDelegate<E, DataGridItems<E>> createDelegate() {
-        return applicationContext.getBean(GridDelegate.class, this);
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public GridDataView<E> setItems(DataProvider<E, Void> dataProvider) {
         if (dataProvider instanceof DataGridItems) {
-            gridDelegate.setItems((DataGridItems<E>) dataProvider);
+            gridDelegate.setItems((GroupDataGridItems<E>) dataProvider);
         }
 
         return super.setItems(dataProvider);
@@ -128,13 +120,32 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
 
     @Nullable
     @Override
-    public DataGridItems<E> getItems() {
+    public GroupDataGridItems<E> getItems() {
         return gridDelegate.getItems();
     }
 
     @Override
     public boolean isMultiSelect() {
         return gridDelegate.isMultiSelect();
+    }
+
+    @Override
+    public void setMultiSelect(boolean multiSelect) {
+        gridDelegate.setMultiSelect(multiSelect);
+    }
+
+    @Override
+    public void enableMultiSelect() {
+        gridDelegate.enableMultiSelect();
+    }
+
+    @Override
+    public GridSelectionModel<E> setSelectionMode(SelectionMode selectionMode) {
+        GridSelectionModel<E> selectionModel = super.setSelectionMode(selectionMode);
+
+        gridDelegate.onSelectionModelChange(selectionModel);
+
+        return selectionModel;
     }
 
     @Override
@@ -168,27 +179,8 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
      * @see com.vaadin.flow.component.grid.Grid#addItemDoubleClickListener(ComponentEventListener)
      */
     @Override
-    public void setEnterPressHandler(@Nullable Consumer<EnterPressEvent<DataGrid<E>>> handler) {
+    public void setEnterPressHandler(@Nullable Consumer<EnterPressEvent<GroupDataGrid<E>>> handler) {
         gridDelegate.setEnterPressHandler(handler);
-    }
-
-    @Override
-    public void enableMultiSelect() {
-        gridDelegate.enableMultiSelect();
-    }
-
-    @Override
-    public void setMultiSelect(boolean multiSelect) {
-        gridDelegate.setMultiSelect(multiSelect);
-    }
-
-    @Override
-    public GridSelectionModel<E> setSelectionMode(SelectionMode selectionMode) {
-        GridSelectionModel<E> selectionModel = super.setSelectionMode(selectionMode);
-
-        gridDelegate.onSelectionModelChange(selectionModel);
-
-        return selectionModel;
     }
 
     @Override
@@ -267,6 +259,11 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     @Override
+    public boolean isEditorCreated() {
+        return editorCreated;
+    }
+
+    @Override
     public boolean isAggregatable() {
         return gridDelegate.isAggregatable();
     }
@@ -282,8 +279,8 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     @Override
-    public void setAggregationPosition(AggregationPosition aggregationPosition) {
-        gridDelegate.setAggregationPosition(aggregationPosition);
+    public void setAggregationPosition(AggregationPosition position) {
+        gridDelegate.setAggregationPosition(position);
     }
 
     @Override
@@ -292,7 +289,7 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     @Override
-    public Map<Grid.Column<E>, Object> getAggregationResults() {
+    public Map<Column<E>, Object> getAggregationResults() {
         return gridDelegate.getAggregationResults();
     }
 
@@ -349,11 +346,6 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     @Override
-    public boolean isEditorCreated() {
-        return editorCreated;
-    }
-
-    @Override
     protected void onDataProviderChange() {
         super.onDataProviderChange();
 
@@ -380,13 +372,6 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     @Override
     protected GridActionsSupport<JmixGrid<E>, E> createActionsSupport() {
         return applicationContext.getBean(DataGridActionsSupport.class, this);
-    }
-
-    protected void onAfterApplyColumnSecurity(AbstractGridDelegate.ColumnSecurityContext<E> context) {
-        if (!context.isPropertyEnabled()) {
-            // Remove column from component while GridDelegate stores this column
-            super.removeColumn(context.getColumn());
-        }
     }
 
     @Override
@@ -435,5 +420,16 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
         }
 
         return null;
+    }
+
+    protected GroupGridDelegate<E, GroupDataGridItems<E>> createDelegate() {
+        return applicationContext.getBean(GroupGridDelegate.class, this);
+    }
+
+    protected void onAfterApplyColumnSecurity(AbstractGridDelegate.ColumnSecurityContext<E> context) {
+        if (!context.isPropertyEnabled()) {
+            // Remove column from component while GridDelegate stores this column
+            super.removeColumn(context.getColumn());
+        }
     }
 }

@@ -91,6 +91,7 @@ public abstract class BaseLoaderConfig {
         loaders.put("userIndicator", UserIndicatorLoader.class);
         loaders.put("dataGrid", DataGridLoader.class);
         loaders.put("treeDataGrid", TreeDataGridLoader.class);
+        loaders.put("groupDataGrid", GroupDataGridLoader.class);
         loaders.put("loginForm", LoginFormLoader.class);
         loaders.put("loginOverlay", LoginOverlayLoader.class);
         loaders.put("simplePagination", SimplePaginationLoader.class);
