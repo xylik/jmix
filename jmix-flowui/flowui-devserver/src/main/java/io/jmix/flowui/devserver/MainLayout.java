@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Haulmont.
+ * Copyright 2025 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.devserver.servlet;
+package io.jmix.flowui.devserver;
 
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.server.handler.ErrorHandler;
-import org.eclipse.jetty.util.Callback;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 
-public class JmixErrorHandler extends ErrorHandler {
+@Route("")
+@AnonymousAllowed
+public class MainLayout extends Div implements RouterLayout {
 }

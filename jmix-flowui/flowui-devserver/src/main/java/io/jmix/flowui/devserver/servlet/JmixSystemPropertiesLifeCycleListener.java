@@ -16,19 +16,20 @@
 
 package io.jmix.flowui.devserver.servlet;
 
-import com.vaadin.flow.server.InitParameters;
-import io.jmix.flowui.devserver.frontend.FrontendUtils;
-import org.eclipse.jetty.util.component.LifeCycle;
-
 import java.util.Properties;
 
-import static com.vaadin.flow.server.Constants.PROJECT_FRONTEND_GENERATED_DIR_TOKEN;
+import org.eclipse.jetty.util.component.LifeCycle;
+
 import static com.vaadin.flow.server.Constants.VAADIN_PREFIX;
+import static com.vaadin.flow.server.InitParameters.BUILD_FOLDER;
 import static com.vaadin.flow.server.InitParameters.FRONTEND_HOTDEPLOY;
 import static com.vaadin.flow.server.InitParameters.SERVLET_PARAMETER_ENABLE_PNPM;
-import static io.jmix.flowui.devserver.frontend.FrontendUtils.*;
+import static com.vaadin.flow.server.frontend.FrontendUtils.PROJECT_BASEDIR;
 
 public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener {
+
+    public static final String STUDIO_VIEW_DESIGNER_DIR_PROPERTY = "STUDIO_VIEW_DESIGNER_DIR";
+    public static final String VIEW_DESIGNER_FOLDER = "/.jmix/screen-designer";
 
     private final String projectBaseDir;
     private final String isPnpmEnabled;
@@ -48,13 +49,12 @@ public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener
 
     private void initializeProperties() {
         String studioViewDesignerDir = projectBaseDir + VIEW_DESIGNER_FOLDER;
-        this.properties.setProperty(VAADIN_PREFIX + PROJECT_BASEDIR, studioViewDesignerDir);
-        this.properties.setProperty(VAADIN_PREFIX + InitParameters.BUILD_FOLDER, BUILD_FOLDER);
-        this.properties.setProperty(PARAM_STUDIO_DIR, studioViewDesignerDir);
-        this.properties.setProperty(PARAM_FRONTEND_DIR, studioViewDesignerDir + FRONTEND_FOLDER);
-        this.properties.setProperty(PARAM_FLOW_FRONTEND_DIR, studioViewDesignerDir + FLOW_FRONTEND_FOLDER);
+        this.properties.setProperty(STUDIO_VIEW_DESIGNER_DIR_PROPERTY, studioViewDesignerDir);
+        this.properties.setProperty(VAADIN_PREFIX + PROJECT_BASEDIR, projectBaseDir);
+        this.properties.setProperty(VAADIN_PREFIX + BUILD_FOLDER, "build");
         this.properties.setProperty(VAADIN_PREFIX + SERVLET_PARAMETER_ENABLE_PNPM, isPnpmEnabled);
-        this.properties.setProperty(VAADIN_PREFIX + PROJECT_FRONTEND_GENERATED_DIR_TOKEN, studioViewDesignerDir + GENERATED_FRONTEND_FOLDER);
-        this.properties.setProperty(VAADIN_PREFIX + FRONTEND_HOTDEPLOY, "true");
+        // FIXME: something strange happens if we enable frontend hot deploy
+        //  see: https://github.com/vaadin/flow/issues/19748
+        this.properties.setProperty(VAADIN_PREFIX + FRONTEND_HOTDEPLOY, "false");
     }
 }

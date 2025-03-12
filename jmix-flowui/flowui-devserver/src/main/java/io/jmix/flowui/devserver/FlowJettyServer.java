@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import io.jmix.flowui.devserver.servlet.JmixErrorHandler;
 import io.jmix.flowui.devserver.servlet.JmixServletContextListener;
 import io.jmix.flowui.devserver.servlet.JmixSystemPropertiesLifeCycleListener;
 import org.eclipse.jetty.ee10.annotations.AnnotationConfiguration;
@@ -84,7 +83,6 @@ public class FlowJettyServer extends Server {
         JakartaWebSocketServletContainerInitializer.configure(context, null);
 
         context.addEventListener(new JmixServletContextListener(params));
-        context.setErrorHandler(new JmixErrorHandler());
 
         return context;
     }

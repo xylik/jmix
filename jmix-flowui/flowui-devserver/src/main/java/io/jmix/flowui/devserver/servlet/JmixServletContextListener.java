@@ -29,6 +29,7 @@ public class JmixServletContextListener implements ServletContextListener {
     private final ServletContextListeners listeners = new ServletContextListeners();
 
     // do not delete
+    @SuppressWarnings("unused")
     public JmixServletContextListener() {
     }
 

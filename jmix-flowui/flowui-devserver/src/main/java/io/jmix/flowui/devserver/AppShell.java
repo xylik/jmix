@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Haulmont.
+ * Copyright 2025 Haulmont.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,14 @@
 
 package io.jmix.flowui.devserver;
 
-import elemental.json.JsonObject;
+import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
+import com.vaadin.flow.shared.communication.PushMode;
 
 /**
- * For interfacing with the development tools by plugins.
+ * Used in Studio.
  */
-public interface DevToolsInterface {
-
-    /**
-     * Sends the given message to the client side.
-     *
-     * @param command
-     *            the command to send
-     * @param data
-     *            data, specific to the command
-     */
-    void send(String command, JsonObject data);
+@Push(value = PushMode.MANUAL)
+@SuppressWarnings("unused")
+public class AppShell implements AppShellConfigurator {
 }
