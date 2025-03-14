@@ -18,16 +18,18 @@ package io.jmix.flowui.component.grid;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridSelectionModel;
-import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
+import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.grid.*;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
-import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.selection.SelectionListener;
-import com.vaadin.flow.function.ValueProvider;
+import com.vaadin.flow.function.*;
 import com.vaadin.flow.shared.Registration;
+import io.jmix.core.Metadata;
+import io.jmix.core.MetadataTools;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
@@ -36,9 +38,7 @@ import io.jmix.flowui.component.delegate.AbstractGridDelegate;
 import io.jmix.flowui.component.delegate.GroupGridDelegate;
 import io.jmix.flowui.component.grid.editor.DataGridEditor;
 import io.jmix.flowui.component.grid.editor.DataGridEditorImpl;
-import io.jmix.flowui.data.DataUnit;
-import io.jmix.flowui.data.grid.DataGridItems;
-import io.jmix.flowui.data.grid.GroupDataGridItems;
+import io.jmix.flowui.data.grid.*;
 import io.jmix.flowui.fragment.FragmentUtils;
 import io.jmix.flowui.kit.component.KeyCombination;
 import io.jmix.flowui.kit.component.grid.*;
@@ -52,12 +52,14 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
+@JsModule("@vaadin/grid/src/vaadin-grid-tree-toggle.js")
 public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataComponent<E>, LookupComponent.MultiSelectLookupComponent<E>,
         EnhancedDataGrid<E>, SupportsEnterPress<GroupDataGrid<E>>, ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
+    protected MetadataTools metadataTools;
 
-    protected GroupGridDelegate<E, GroupDataGridItems<E>> gridDelegate;
+    protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> gridDelegate;
     protected JmixGridContextMenu<E> contextMenu;
 
     protected boolean editorCreated = false;
@@ -69,22 +71,14 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     @Override
     public void afterPropertiesSet() {
+        metadataTools = applicationContext.getBean(MetadataTools.class);
+
         initComponent();
     }
 
     protected void initComponent() {
         gridDelegate = createDelegate();
         gridDelegate.setAfterColumnSecurityApplyHandler(this::onAfterApplyColumnSecurity);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public GridDataView<E> setItems(DataProvider<E, Void> dataProvider) {
-        if (dataProvider instanceof DataGridItems) {
-            gridDelegate.setItems((GroupDataGridItems<E>) dataProvider);
-        }
-
-        return super.setItems(dataProvider);
     }
 
     @Nullable
@@ -121,7 +115,25 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     @Nullable
     @Override
     public GroupDataGridItems<E> getItems() {
-        return gridDelegate.getItems();
+        GroupDataGridItems<E> dataGridItems = gridDelegate.getItems();
+        if (dataGridItems instanceof HierarchicalGroupDataGridItemsAdapter<E> wrapper) {
+            return wrapper.getDataGridItems();
+        }
+        return dataGridItems;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public GridDataView<E> setItems(DataProvider<E, Void> dataProvider) {
+        if (dataProvider instanceof GroupDataGridItems dataGridItems) {
+            HierarchicalGroupDataGridItemsAdapter gridItemsAdapter =
+                    new HierarchicalGroupDataGridItemsAdapter<>(dataGridItems,
+                            applicationContext.getBean(Metadata.class));
+            gridDelegate.setItems(gridItemsAdapter);
+            return super.setItems(gridItemsAdapter);
+        }
+
+        return super.setItems(dataProvider);
     }
 
     @Override
@@ -256,6 +268,40 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     @Override
     public DataGridColumn<E> addColumn(String propertyName) {
         return (DataGridColumn<E>) super.addColumn(propertyName);
+    }
+
+    // TODO: rp
+    public Column<E> addHierarchyColumn() {
+        Column<E> column = addColumn(LitRenderer.<E>of(
+                        "<vaadin-grid-tree-toggle @click=${onClick} .leaf=${!item.children} .expanded=${model.expanded} .level=${model.level}>"
+                                + "${item.name}</vaadin-grid-tree-toggle>")
+                .withProperty("children", item -> getDataCommunicator().hasChildren(item))
+                .withProperty("name", item -> {
+                    String name = "";
+                    if (getDataCommunicator().hasChildren(item)) {
+                        HierarchicalGroupDataGridItems<E> items = gridDelegate.getItems();
+                        if (items != null) {
+                            GroupInfo group = items.getGroupByItem(item);
+                            name = metadataTools.format(group.getValue(), group.getProperty().getMetaProperty());
+                        }
+                    }
+                    return name;
+                }).withFunction("onClick", item -> {
+                    if (getDataCommunicator().hasChildren(item)) {
+                        if (getDataCommunicator().isExpanded(item)) {
+                            doCollapse(List.of(item), true);
+                        } else {
+                            doExpand(List.of(item), true);
+                        }
+                    }
+                }));
+
+        // TODO: rp
+/*        final SerializableComparator<T> comparator = (a, b) -> compareMaybeComparables(valueProvider.apply(a),
+                valueProvider.apply(b));
+        column.setComparator(comparator);*/
+
+        return column;
     }
 
     @Override
@@ -422,7 +468,17 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return null;
     }
 
-    protected GroupGridDelegate<E, GroupDataGridItems<E>> createDelegate() {
+    // TODO: rp
+    public void expand(GroupInfo group) {
+
+    }
+
+    // TODO: rp
+    public void collapse(GroupInfo group) {
+
+    }
+
+    protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> createDelegate() {
         return applicationContext.getBean(GroupGridDelegate.class, this);
     }
 

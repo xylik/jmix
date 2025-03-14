@@ -17,14 +17,14 @@
 package io.jmix.flowui.component.delegate;
 
 import io.jmix.flowui.component.grid.GroupDataGrid;
-import io.jmix.flowui.data.grid.GroupDataGridItems;
+import io.jmix.flowui.data.grid.HierarchicalGroupDataGridItems;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component("flowui_GroupGridDelegate")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class GroupGridDelegate<E, ITEMS extends GroupDataGridItems<E>>
+public class GroupGridDelegate<E, ITEMS extends HierarchicalGroupDataGridItems<E>>
         extends AbstractGridDelegate<GroupDataGrid<E>, E, ITEMS> {
 
     public GroupGridDelegate(GroupDataGrid<E> component) {

@@ -16,6 +16,8 @@
 
 package io.jmix.flowui.data.grid;
 
+import io.jmix.core.metamodel.model.MetaPropertyPath;
+
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -25,22 +27,22 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
     /**
      * Perform grouping by the list of properties
      */
-    void groupBy(@Nullable Object[] properties);
+    void groupBy(MetaPropertyPath[] properties);
 
     /**
      * @return the list of root groups
      */
-    List<GroupInfo> rootGroups();
-
-    /**
-     * Indicates that group has nested groups
-     */
-    boolean hasChildren(GroupInfo groupId);
+    List<GroupInfo> getRootGroups();
 
     /**
      * @return the list of nested groups
      */
     List<GroupInfo> getChildren(GroupInfo groupId);
+
+    /**
+     * Indicates that group has nested groups
+     */
+    boolean hasChildren(GroupInfo groupId);
 
     /**
      * @return the list of nested items
@@ -64,21 +66,9 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
     List<GroupInfo> getGroupPath(T item);
 
     /**
-     * @return a group property
-     */
-    @Nullable
-    Object getGroupProperty(GroupInfo groupId);
-
-    /**
-     * @return a group property value
-     */
-    @Nullable
-    Object getGroupPropertyValue(GroupInfo groupId);
-
-    /**
      * @return item ids that are contained in the selected group
      */
-    Collection<?> getGroupItemIds(GroupInfo groupId);
+    Collection<T> getGroupItems(GroupInfo groupId);
 
     /**
      * @return a count of items that are contained in the selected group
@@ -93,7 +83,7 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
     /**
      * @return group properties
      */
-    Collection<?> getGroupProperties();
+    Collection<MetaPropertyPath> getGroupProperties();
 
     /**
      * Indicates that a group is contained in the groups tree

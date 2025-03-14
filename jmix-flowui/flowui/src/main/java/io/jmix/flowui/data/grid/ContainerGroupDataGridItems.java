@@ -16,7 +16,7 @@
 
 package io.jmix.flowui.data.grid;
 
-import com.google.common.collect.ImmutableList;
+import io.jmix.core.Metadata;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
@@ -24,33 +24,39 @@ import io.jmix.flowui.model.CollectionContainer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> implements GroupDataGridItems<T> {
 
     // todo rp rework API to make it more friendly
-    protected Object[] groupProperties = null;
+    protected MetaPropertyPath[] groupProperties = null;
 
     protected Map<GroupInfo, GroupInfo> parents;
-
     protected Map<GroupInfo, Set<GroupInfo>> children;
 
     protected List<GroupInfo> roots;
 
-    protected Map<GroupInfo, List<?>> groupItems;
-    // reversed relations from groupItems
-    protected Map<Object, GroupInfo> itemGroups;
-
-    protected boolean isGrouping;
+    protected Map<GroupInfo, List<T>> groupItems;
+    protected Map<T, GroupInfo> itemGroups;
 
     protected Object[] sortProperties;
     protected boolean[] sortAscending;
 
-    public ContainerGroupDataGridItems(CollectionContainer<T> container) {
+    protected Metadata metadata;
+
+    public ContainerGroupDataGridItems(CollectionContainer<T> container, Metadata metadata) {
         super(container);
+
+        this.metadata = metadata;
+    }
+
+    @Override
+    protected void containerCollectionChanged(CollectionContainer.CollectionChangeEvent<T> event) {
+        refreshGroups();
+
+        super.containerCollectionChanged(event);
     }
 
     @Override
@@ -61,27 +67,22 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Override
-    public void groupBy(@Nullable Object[] properties) {
-        if (isGrouping) {
-            return;
-        }
-        isGrouping = true;
-        try {
-            if (properties != null) {
-                groupProperties = properties;
+    public void groupBy(MetaPropertyPath[] properties) {
+        Preconditions.checkNotNullArgument(properties);
 
-                if (!ArrayUtils.isEmpty(groupProperties)) {
-                    doGroup();
-                } else {
-                    roots = null;
-                    parents = null;
-                    children = null;
-                    groupItems = null;
-                    itemGroups = null;
-                }
+        groupProperties = properties;
+
+        try {
+            if (ArrayUtils.isNotEmpty(groupProperties)) {
+                doGroup();
+            } else {
+                roots = null;
+                parents = null;
+                children = null;
+                groupItems = null;
+                itemGroups = null;
             }
         } finally {
-            isGrouping = false;
             if (sortProperties != null && sortProperties.length > 0 && !hasGroups()) {
                 super.sort(sortProperties, sortAscending);
             }
@@ -102,8 +103,8 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
                 throw new IllegalStateException("Item group cannot be NULL");
             }
 
-            List itemsIds = groupItems.computeIfAbsent(groupInfo, k -> new ArrayList<>());
-            itemsIds.add(EntityValues.getId(item));
+            List<T> items = groupItems.computeIfAbsent(groupInfo, k -> new ArrayList<>());
+            items.add(item);
         }
     }
 
@@ -111,12 +112,12 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     protected GroupInfo groupItems(int propertyIndex, @Nullable GroupInfo parent,
                                    Collection<GroupInfo> children,
                                    T item, LinkedMap<MetaPropertyPath, Object> groupValues) {
-        MetaPropertyPath property = (MetaPropertyPath) groupProperties[propertyIndex++];
+        MetaPropertyPath property = groupProperties[propertyIndex++];
         Object itemValue = getValueByProperty(item, property);
         groupValues.put(property, itemValue);
 
-        GroupInfo groupInfo = new GroupInfo((LinkedMap) groupValues);
-        itemGroups.put(EntityValues.getId(item), groupInfo);
+        GroupInfo groupInfo = new GroupInfo(groupValues);
+        itemGroups.put(item, groupInfo);
 
         if (!parents.containsKey(groupInfo)) {
             parents.put(groupInfo, parent);
@@ -144,7 +145,7 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Override
-    public List<GroupInfo> rootGroups() {
+    public List<GroupInfo> getRootGroups() {
         if (hasGroups()) {
             return Collections.unmodifiableList(roots);
         }
@@ -172,12 +173,11 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
             return Collections.emptyList();
         }
 
-        List<?> idsList = groupItems.get(groupId);
-        if (containsGroup(groupId) && CollectionUtils.isNotEmpty(idsList)) {
-            return idsList.stream()
-                    .map(id -> container.getItem(id))
-                    .collect(Collectors.toList());
+        List<T> items = groupItems.get(groupId);
+        if (containsGroup(groupId) && CollectionUtils.isNotEmpty(items)) {
+            return new ArrayList<>(items);
         }
+
         return Collections.emptyList();
     }
 
@@ -187,9 +187,8 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
             return Collections.emptyList();
         }
 
+        List<T> entities = new ArrayList<>();
         if (containsGroup(groupId)) {
-            List<T> entities = new ArrayList<>();
-
             // if current group contains other groups
             if (hasChildren(groupId)) {
                 Set<GroupInfo> children = getChildrenInternal(groupId);
@@ -197,15 +196,9 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
                     entities.addAll(getChildItems(childGroup));
                 }
             }
-
-            for (Object id : groupItems.getOrDefault(groupId, Collections.emptyList())) {
-                T item = container.getItem(id);
-                entities.add(item);
-            }
-
-            return entities;
+            entities.addAll(groupItems.getOrDefault(groupId, Collections.emptyList()));
         }
-        return Collections.emptyList();
+        return entities;
     }
 
     // return collection as is
@@ -219,29 +212,19 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     @Nullable
     @Override
     public GroupInfo getParentGroup(T item) {
-        Object id = EntityValues.getId(item);
-        if (container.getItemOrNull(id) == null) {
-            throw new IllegalArgumentException("Datasource doesn't contain passed entity");
-        }
-
         if (itemGroups == null) {
             return null;
         }
-        return itemGroups.get(EntityValues.getId(item));
+        return itemGroups.get(item);
     }
 
     @Override
     public List<GroupInfo> getGroupPath(T item) {
-        Object id = EntityValues.getId(item);
-        if (container.getItemOrNull(id) == null) {
-            throw new IllegalArgumentException("Datasource doesn't contain passed entity");
-        }
-
         if (itemGroups == null) {
             return Collections.emptyList();
         }
 
-        GroupInfo groupInfo = itemGroups.get(EntityValues.getId(item));
+        GroupInfo groupInfo = itemGroups.get(item);
         if (groupInfo == null) {
             return Collections.emptyList();
         }
@@ -257,56 +240,37 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
         return parentGroups;
     }
 
-    @Nullable
     @Override
-    public Object getGroupProperty(GroupInfo groupId) {
+    public Collection<T> getGroupItems(GroupInfo groupId) {
         if (containsGroup(groupId)) {
-            return groupId.getProperty();
-        }
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Object getGroupPropertyValue(GroupInfo groupId) {
-        if (containsGroup(groupId)) {
-            return groupId.getValue();
-        }
-        return null;
-    }
-
-    @Override
-    public Collection getGroupItemIds(GroupInfo groupId) {
-        if (containsGroup(groupId)) {
-            List itemIds;
-            if ((itemIds = groupItems.get(groupId)) == null) {
-                itemIds = new ArrayList<>();
+            List<T> items = groupItems.get(groupId);
+            if (items == null) {
+                items = new ArrayList<>();
                 Set<GroupInfo> children = getChildrenInternal(groupId);
                 for (GroupInfo child : children) {
-                    itemIds.addAll(getGroupItemIds(child));
+                    items.addAll(getGroupItems(child));
                 }
             }
-            return ImmutableList.copyOf(itemIds);
+            return Collections.unmodifiableList(items);
         }
         return Collections.emptyList();
     }
 
     @Override
     public int getGroupItemsCount(GroupInfo groupId) {
-        if (containsGroup(groupId)) {
-            List itemIds;
-            if ((itemIds = groupItems.get(groupId)) == null) {
-                int count = 0;
-                Set<GroupInfo> children = getChildrenInternal(groupId);
-                for (GroupInfo child : children) {
-                    count += getGroupItemsCount(child);
-                }
-                return count;
-            } else {
-                return itemIds.size();
-            }
+        if (!containsGroup(groupId)) {
+            return 0;
         }
-        return 0;
+        List<T> items = groupItems.get(groupId);
+        if (items != null) {
+            return items.size();
+        }
+        int count = 0;
+        Set<GroupInfo> children = getChildrenInternal(groupId);
+        for (GroupInfo child : children) {
+            count += getGroupItemsCount(child);
+        }
+        return count;
     }
 
     @Override
@@ -315,7 +279,7 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Override
-    public Collection<?> getGroupProperties() {
+    public Collection<MetaPropertyPath> getGroupProperties() {
         if (groupProperties == null) {
             return Collections.emptyList();
         }
@@ -326,5 +290,11 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     @Override
     public boolean containsGroup(GroupInfo groupId) {
         return hasGroups() && parents.containsKey(groupId);
+    }
+
+    protected void refreshGroups() {
+        if (hasGroups()) {
+            doGroup();
+        }
     }
 }

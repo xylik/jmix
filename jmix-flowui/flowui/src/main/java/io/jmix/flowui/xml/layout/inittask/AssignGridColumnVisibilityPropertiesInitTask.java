@@ -21,9 +21,7 @@ import com.google.common.base.Strings;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import io.jmix.flowui.component.UiComponentUtils;
-import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.component.grid.DataGridColumn;
-import io.jmix.flowui.component.grid.TreeDataGrid;
+import io.jmix.flowui.component.grid.*;
 import io.jmix.flowui.component.gridcolumnvisibility.JmixGridColumnVisibility;
 import io.jmix.flowui.exception.GuiDevelopmentException;
 import io.jmix.flowui.xml.layout.ComponentLoader;
@@ -44,7 +42,9 @@ public class AssignGridColumnVisibilityPropertiesInitTask extends AbstractInitTa
     public void execute(ComponentLoader.Context context) {
         String dataGridId = loadContext.getDataGridId();
         Component gridComponent = UiComponentUtils.findComponent(context.getOrigin(), dataGridId).orElse(null);
-        if (!(gridComponent instanceof DataGrid<?>) && !(gridComponent instanceof TreeDataGrid<?>)) {
+        if (!(gridComponent instanceof DataGrid<?>)
+                && !(gridComponent instanceof TreeDataGrid<?>)
+                && !(gridComponent instanceof GroupDataGrid<?>)) {
             throw new GuiDevelopmentException("Failed to find a grid with specified id", context, "Data Grid", dataGridId);
         }
 
