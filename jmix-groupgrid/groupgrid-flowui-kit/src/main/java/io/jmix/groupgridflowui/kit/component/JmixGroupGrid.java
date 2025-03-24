@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.kit.component.grid;
+package io.jmix.groupgridflowui.kit.component;
 
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.grid.GridArrayUpdater;
@@ -31,6 +31,7 @@ import com.vaadin.flow.server.VaadinRequest;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.JsonValue;
+import io.jmix.flowui.kit.component.grid.JmixGrid;
 
 import java.util.ArrayList;
 import java.util.Collection;

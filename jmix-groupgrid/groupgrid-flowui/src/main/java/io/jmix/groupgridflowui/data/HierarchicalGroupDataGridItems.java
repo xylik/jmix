@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.data.grid;
+package io.jmix.groupgridflowui.data;
 
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
 import org.springframework.lang.Nullable;

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.component.delegate;
+package io.jmix.groupgridflowui.delegate;
 
-import io.jmix.flowui.component.grid.GroupDataGrid;
-import io.jmix.flowui.data.grid.HierarchicalGroupDataGridItems;
+import io.jmix.flowui.component.delegate.AbstractGridDelegate;
+import io.jmix.groupgridflowui.component.GroupDataGrid;
+import io.jmix.groupgridflowui.data.HierarchicalGroupDataGridItems;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.kit.component.grid;
+package io.jmix.groupgridflowui.kit.component;
 
-import com.vaadin.flow.data.provider.*;
-import com.vaadin.flow.data.provider.hierarchy.*;
-import com.vaadin.flow.function.*;
-import com.vaadin.flow.internal.*;
-import elemental.json.*;
+import com.vaadin.flow.data.provider.CompositeDataGenerator;
+import com.vaadin.flow.data.provider.hierarchy.HierarchicalArrayUpdater;
+import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataCommunicator;
+import com.vaadin.flow.function.SerializableConsumer;
+import com.vaadin.flow.function.SerializableSupplier;
+import com.vaadin.flow.function.ValueProvider;
+import com.vaadin.flow.internal.StateNode;
+import elemental.json.JsonArray;
 
 public class GroupDataGridDataCommunicator<T> extends HierarchicalDataCommunicator<T> {
 

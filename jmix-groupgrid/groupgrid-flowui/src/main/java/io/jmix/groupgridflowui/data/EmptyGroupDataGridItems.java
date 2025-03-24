@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.data.grid;
+package io.jmix.groupgridflowui.data;
 
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
+import io.jmix.flowui.data.grid.EmptyDataGridItems;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

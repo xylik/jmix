@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.data.grid;
+package io.jmix.groupgridflowui.data;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -28,7 +28,9 @@ import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.data.BindingState;
 import org.springframework.lang.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 

@@ -89,6 +89,10 @@ includeProject('fullcalendar-flowui-starter', 'jmix-fullcalendar/fullcalendar-fl
 includeProject('gridexport-flowui', 'jmix-gridexport/gridexport-flowui')
 includeProject('gridexport-flowui-starter', 'jmix-gridexport/gridexport-flowui-starter')
 
+includeProject('groupgrid-flowui', 'jmix-groupgrid/groupgrid-flowui')
+includeProject('groupgrid-flowui-kit', 'jmix-groupgrid/groupgrid-flowui-kit')
+includeProject('groupgrid-flowui-starter', 'jmix-groupgrid/groupgrid-flowui-starter')
+
 includeProject('imap', 'jmix-imap/imap')
 includeProject('imap-starter', 'jmix-imap/imap-starter')
 

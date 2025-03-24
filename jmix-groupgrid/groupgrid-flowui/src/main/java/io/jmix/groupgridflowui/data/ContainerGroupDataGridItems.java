@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.data.grid;
+package io.jmix.groupgridflowui.data;
 
 import io.jmix.core.Metadata;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
+import io.jmix.flowui.data.grid.ContainerDataGridItems;
 import io.jmix.flowui.model.CollectionContainer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;

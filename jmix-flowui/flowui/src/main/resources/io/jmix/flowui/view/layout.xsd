@@ -2930,32 +2930,6 @@
         <xs:attribute name="resizable" type="xs:boolean"/>
     </xs:complexType>
 
-    <xs:complexType name="groupDataGridColumnComponent">
-        <xs:complexContent>
-            <xs:extension base="dataGridColumnComponent">
-                <xs:attribute name="groupAllowed" type="xs:boolean"/>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="groupDataGridColumnsType">
-        <xs:complexContent>
-            <xs:extension base="dataGridColumnsType">
-                <xs:sequence>
-                    <xs:element name="groupColumn" minOccurs="0">
-                        <xs:complexType>
-                            <xs:sequence>
-                                <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
-                            </xs:sequence>
-                        </xs:complexType>
-                    </xs:element>
-
-                    <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
     <!--Grid.EditorActionsColumn-->
     <xs:complexType name="dataGridEditorActionsColumn">
         <xs:sequence>
@@ -3072,18 +3046,6 @@
                 <xs:attribute name="hierarchyProperty" type="xs:string" use="required"/>
                 <xs:attribute name="hierarchyColumn" type="xs:string"/>
                 <xs:attribute name="showOrphans" type="xs:boolean"/>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <!-- GroupDataGrid-->
-    <!-- todo rp -->
-    <xs:complexType name="groupDataGridComponent">
-        <xs:complexContent>
-            <xs:extension base="dataGridComponent">
-                <xs:sequence>
-                    <xs:element name="columns" type="groupDataGridColumnsType"/>
-                </xs:sequence>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>
@@ -4967,7 +4929,6 @@
                 <xs:element name="progressBar" type="progressBarComponent"/>
                 <xs:element name="dataGrid" type="dataGridComponent"/>
                 <xs:element name="treeDataGrid" type="treeDataGridComponent"/>
-                <xs:element name="groupDataGrid" type="groupDataGridComponent"/>
                 <xs:element name="loginForm" type="loginFormComponent"/>
                 <xs:element name="loginOverlay" type="loginOverlayComponent"/>
                 <xs:element name="simplePagination" type="simplePaginationComponent"/>

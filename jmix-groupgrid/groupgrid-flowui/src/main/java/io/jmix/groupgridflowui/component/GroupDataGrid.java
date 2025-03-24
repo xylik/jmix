@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.component.grid;
+package io.jmix.groupgridflowui.component;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.grid.*;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSelectionModel;
+import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
-import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.selection.SelectionListener;
-import com.vaadin.flow.function.*;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Metadata;
 import io.jmix.core.MetadataTools;
@@ -35,13 +37,17 @@ import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.component.*;
 import io.jmix.flowui.component.delegate.AbstractGridDelegate;
-import io.jmix.flowui.component.delegate.GroupGridDelegate;
+import io.jmix.flowui.component.grid.*;
 import io.jmix.flowui.component.grid.editor.DataGridEditor;
 import io.jmix.flowui.component.grid.editor.DataGridEditorImpl;
-import io.jmix.flowui.data.grid.*;
 import io.jmix.flowui.fragment.FragmentUtils;
 import io.jmix.flowui.kit.component.KeyCombination;
-import io.jmix.flowui.kit.component.grid.*;
+import io.jmix.flowui.kit.component.grid.GridActionsSupport;
+import io.jmix.flowui.kit.component.grid.JmixGrid;
+import io.jmix.flowui.kit.component.grid.JmixGridContextMenu;
+import io.jmix.groupgridflowui.data.*;
+import io.jmix.groupgridflowui.delegate.GroupGridDelegate;
+import io.jmix.groupgridflowui.kit.component.JmixGroupGrid;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -188,7 +194,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
      *
      * @param handler code to execute when Enter key is pressed
      *                or {@code null} to remove previously set.
-     * @see com.vaadin.flow.component.grid.Grid#addItemDoubleClickListener(ComponentEventListener)
+     * @see Grid#addItemDoubleClickListener(ComponentEventListener)
      */
     @Override
     public void setEnterPressHandler(@Nullable Consumer<EnterPressEvent<GroupDataGrid<E>>> handler) {

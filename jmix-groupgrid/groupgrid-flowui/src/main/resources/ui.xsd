@@ -1,0 +1,62 @@
+<!--
+  ~ Copyright 2025 Haulmont.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<xs:schema targetNamespace="http://jmix.io/schema/groupdg/ui"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:layout="http://jmix.io/schema/flowui/layout"
+           xmlns="http://jmix.io/schema/groupdg/ui"
+           elementFormDefault="qualified">
+
+    <xs:element name="groupDataGrid" type="groupDataGridColumnComponent"/>
+
+    <!-- GroupDataGrid-->
+    <!-- todo rp -->
+    <xs:complexType name="groupDataGridComponent">
+        <xs:complexContent>
+            <xs:extension base="layout:dataGridComponent">
+                <xs:sequence>
+                    <xs:element name="columns" type="groupDataGridColumnsType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="groupDataGridColumnComponent">
+        <xs:complexContent>
+            <xs:extension base="layout:dataGridColumnComponent">
+                <xs:attribute name="groupAllowed" type="xs:boolean"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="groupDataGridColumnsType">
+        <xs:complexContent>
+            <xs:extension base="layout:dataGridColumnsType">
+                <xs:sequence>
+                    <xs:element name="groupColumn" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+
+                    <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+</xs:schema>

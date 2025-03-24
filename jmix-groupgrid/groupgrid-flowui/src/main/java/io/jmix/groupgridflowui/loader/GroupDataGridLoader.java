@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.xml.layout.loader.component;
+package io.jmix.groupgridflowui.loader;
 
 import com.google.common.base.Strings;
 import io.jmix.core.FetchPlan;
 import io.jmix.core.Metadata;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
-import io.jmix.flowui.component.grid.GroupDataGrid;
-import io.jmix.flowui.data.grid.ContainerGroupDataGridItems;
-import io.jmix.flowui.data.grid.EmptyGroupDataGridItems;
 import io.jmix.flowui.view.View;
+import io.jmix.flowui.xml.layout.loader.component.AbstractGridLoader;
+import io.jmix.groupgridflowui.component.GroupDataGrid;
+import io.jmix.groupgridflowui.data.ContainerGroupDataGridItems;
+import io.jmix.groupgridflowui.data.EmptyGroupDataGridItems;
 import org.dom4j.Element;
 
 import java.util.ArrayList;

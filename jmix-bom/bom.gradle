@@ -173,6 +173,10 @@ dependencies {
 
         api "io.jmix.gridexport:jmix-gridexport-flowui-starter:$freeVersion"
 
+        api "io.jmix.groupgrid:jmix-groupgrid-flowui:$freeVersion"
+        api "io.jmix.groupgrid:jmix-groupgrid-flowui-kit:$freeVersion"
+        api "io.jmix.groupgrid:jmix-groupgrid-flowui-starter:$freeVersion"
+
         api "io.jmix.imap:jmix-imap:$freeVersion"
         api "io.jmix.imap:jmix-imap-starter:$freeVersion"
 

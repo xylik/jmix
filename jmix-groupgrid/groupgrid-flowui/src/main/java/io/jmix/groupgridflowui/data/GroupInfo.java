@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.jmix.flowui.data.grid;
+package io.jmix.groupgridflowui.data;
 
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import org.apache.commons.collections4.map.LinkedMap;

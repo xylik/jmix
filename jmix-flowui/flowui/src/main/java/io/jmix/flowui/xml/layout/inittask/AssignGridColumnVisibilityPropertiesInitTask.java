@@ -42,9 +42,7 @@ public class AssignGridColumnVisibilityPropertiesInitTask extends AbstractInitTa
     public void execute(ComponentLoader.Context context) {
         String dataGridId = loadContext.getDataGridId();
         Component gridComponent = UiComponentUtils.findComponent(context.getOrigin(), dataGridId).orElse(null);
-        if (!(gridComponent instanceof DataGrid<?>)
-                && !(gridComponent instanceof TreeDataGrid<?>)
-                && !(gridComponent instanceof GroupDataGrid<?>)) {
+        if (!(gridComponent instanceof DataGrid<?>) && !(gridComponent instanceof TreeDataGrid<?>)) {
             throw new GuiDevelopmentException("Failed to find a grid with specified id", context, "Data Grid", dataGridId);
         }
 
