@@ -16,9 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Used in Studio.
- */
 @AnonymousAllowed
 @SuppressWarnings("unused")
 @Route(value = Preview.PATH, layout = MainLayout.class)

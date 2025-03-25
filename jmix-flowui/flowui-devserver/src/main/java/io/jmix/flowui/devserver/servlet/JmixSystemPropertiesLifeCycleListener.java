@@ -48,13 +48,20 @@ public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener
     }
 
     private void initializeProperties() {
+
+        boolean useProjectFolder = false;
+        try {
+            useProjectFolder = Boolean.parseBoolean(properties.getProperty("devserver.useProjectFolder", "false"));
+        } catch (Exception ignored) {
+        }
+
         String studioViewDesignerDir = projectBaseDir + VIEW_DESIGNER_FOLDER;
-        this.properties.setProperty(STUDIO_VIEW_DESIGNER_DIR_PROPERTY, studioViewDesignerDir);
-        this.properties.setProperty(VAADIN_PREFIX + PROJECT_BASEDIR, projectBaseDir);
-        this.properties.setProperty(VAADIN_PREFIX + BUILD_FOLDER, "build");
-        this.properties.setProperty(VAADIN_PREFIX + SERVLET_PARAMETER_ENABLE_PNPM, isPnpmEnabled);
+        properties.setProperty(STUDIO_VIEW_DESIGNER_DIR_PROPERTY, studioViewDesignerDir);
+        properties.setProperty(VAADIN_PREFIX + PROJECT_BASEDIR, useProjectFolder ? projectBaseDir : studioViewDesignerDir);
+        properties.setProperty(VAADIN_PREFIX + BUILD_FOLDER, "build");
+        properties.setProperty(VAADIN_PREFIX + SERVLET_PARAMETER_ENABLE_PNPM, isPnpmEnabled);
         // FIXME: something strange happens if we enable frontend hot deploy
         //  see: https://github.com/vaadin/flow/issues/19748
-        this.properties.setProperty(VAADIN_PREFIX + FRONTEND_HOTDEPLOY, "false");
+        properties.setProperty(VAADIN_PREFIX + FRONTEND_HOTDEPLOY, "false");
     }
 }
