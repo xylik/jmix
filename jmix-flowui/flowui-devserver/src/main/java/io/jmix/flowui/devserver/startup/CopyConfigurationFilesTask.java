@@ -55,10 +55,9 @@ public class CopyConfigurationFilesTask implements StartupTask {
                     File themeDir = new File(designerThemeFolder, themeName);
                     if (themeDir.exists() && themeDir.isDirectory()) {
                         File newThemeDir = new File(designerThemeFolder, AppShell.PREVIEW_THEME_NAME);
-                        if (themeDir.renameTo(newThemeDir)) {
-                            log.info("Theme folder '{}' has been successfully renamed to '{}'",
-                                    themeName, AppShell.PREVIEW_THEME_NAME);
-                        }
+                        FileUtils.copyDirectory(themeDir, newThemeDir);
+                        FileUtils.deleteDirectory(themeDir);
+                        log.info("Theme folder '{}' has been successfully copied to '{}'", themeName, newThemeDir);
                     }
                 }
             } catch (IOException e) {
