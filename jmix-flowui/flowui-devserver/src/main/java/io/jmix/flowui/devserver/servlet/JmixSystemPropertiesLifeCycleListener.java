@@ -16,20 +16,45 @@
 
 package io.jmix.flowui.devserver.servlet;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Properties;
 
+import io.jmix.flowui.devserver.startup.CopyConfigurationFilesTask;
+import io.jmix.flowui.devserver.startup.StartupContext;
+import io.jmix.flowui.devserver.startup.StartupTask;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.util.component.LifeCycle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.vaadin.flow.server.Constants.VAADIN_PREFIX;
-import static com.vaadin.flow.server.InitParameters.BUILD_FOLDER;
-import static com.vaadin.flow.server.InitParameters.FRONTEND_HOTDEPLOY;
 import static com.vaadin.flow.server.InitParameters.SERVLET_PARAMETER_ENABLE_PNPM;
 import static com.vaadin.flow.server.frontend.FrontendUtils.PROJECT_BASEDIR;
+import static java.lang.Boolean.parseBoolean;
 
 public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener {
 
+    public static final String THEME_VALUE_PROPERTY = "jmix.devserver.themeValue";
+
+    public static final String JMIX_VERSION_PROPERTY = "jmix.devserver.jmixVersion";
+    public static final String JMIX_STUDIO_VERSION_PROPERTY = "jmix.devserver.jmixStudioVersion";
+
+    public static final String USE_PROJECT_FOLDER_PROPERTY = "jmix.devserver.useProjectFolder";
+    public static final String USE_PROJECT_PROPERTIES_PROPERTY = "jmix.devserver.useProjectProperties";
+
     public static final String STUDIO_VIEW_DESIGNER_DIR_PROPERTY = "STUDIO_VIEW_DESIGNER_DIR";
     public static final String VIEW_DESIGNER_FOLDER = "/.jmix/screen-designer";
+
+    private static final String JMIX_PREVIEW_PROPERTIES_FILE_NAME = "jmix-preview.properties";
+
+    private static final Logger log = LoggerFactory.getLogger(JmixSystemPropertiesLifeCycleListener.class);
+
+    private static final List<Class<? extends StartupTask>> startupTasks = List.of(
+            CopyConfigurationFilesTask.class
+    );
 
     private final String projectBaseDir;
     private final String isPnpmEnabled;
@@ -45,23 +70,94 @@ public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener
     @Override
     public void lifeCycleStarting(LifeCycle event) {
         System.getProperties().putAll(properties);
+
+        StartupContext context = new StartupContext(getProjectThemeName(),
+                new File(projectBaseDir), new File(getDesignerDir()));
+
+        for (Class<? extends StartupTask> taskClass : startupTasks) {
+            try {
+                log.info("Executing startup task {}", taskClass.getCanonicalName());
+                StartupTask task = taskClass.getConstructor().newInstance();
+                task.execute(context);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                     InvocationTargetException e) {
+                log.warn("Can not create instance of {}", taskClass.getCanonicalName());
+            }
+        }
     }
 
     private void initializeProperties() {
+        properties.setProperty(VAADIN_PREFIX + SERVLET_PARAMETER_ENABLE_PNPM, isPnpmEnabled);
+        properties.setProperty(STUDIO_VIEW_DESIGNER_DIR_PROPERTY, getDesignerDir());
+        properties.setProperty(VAADIN_PREFIX + PROJECT_BASEDIR, getUseProjectFolder() ? projectBaseDir : getDesignerDir());
 
+        readJmixPreviewPropertiesFile();
+
+        log.info("Properties has been initialized.\n" +
+                        "Jmix version: {}; " +
+                        "Jmix Studio version: {}; " +
+                        "Use project folder: {}; " +
+                        "Use project properties: {}; " +
+                        "Project theme: {}; ",
+                getJmixVersion(),
+                getJmixStudioVersion(),
+                getUseProjectFolder(),
+                getUseProjectProperties(),
+                getProjectThemeName());
+    }
+
+    private void readJmixPreviewPropertiesFile() {
+        log.info("Reading properties from {}", JMIX_PREVIEW_PROPERTIES_FILE_NAME);
+        File propertiesFile = new File(projectBaseDir, JMIX_PREVIEW_PROPERTIES_FILE_NAME);
+
+        if (propertiesFile.exists() && propertiesFile.isFile()) {
+            try {
+                try (var is = FileUtils.openInputStream(propertiesFile)) {
+                    try {
+                        properties.load(is);
+                    } catch (Throwable e) {
+                        log.warn("Exception when loading properties from file", e);
+                    }
+                }
+            } catch (IOException e) {
+                log.warn("Exception when reading {} file", JMIX_PREVIEW_PROPERTIES_FILE_NAME);
+            }
+        } else {
+            log.info("{} file not found, skipping properties reading", propertiesFile);
+        }
+    }
+
+    private String getDesignerDir() {
+        return projectBaseDir + VIEW_DESIGNER_FOLDER;
+    }
+
+    private String getProjectThemeName() {
+        return properties.getOrDefault(THEME_VALUE_PROPERTY, "").toString();
+    }
+
+    private String getJmixVersion() {
+        return properties.getProperty(JMIX_VERSION_PROPERTY);
+    }
+
+    private String getJmixStudioVersion() {
+        return properties.getProperty(JMIX_STUDIO_VERSION_PROPERTY);
+    }
+
+    private boolean getUseProjectFolder() {
         boolean useProjectFolder = false;
         try {
-            useProjectFolder = Boolean.parseBoolean(properties.getProperty("devserver.useProjectFolder", "false"));
+            useProjectFolder = parseBoolean(properties.getProperty(USE_PROJECT_FOLDER_PROPERTY, "false"));
         } catch (Exception ignored) {
         }
+        return useProjectFolder;
+    }
 
-        String studioViewDesignerDir = projectBaseDir + VIEW_DESIGNER_FOLDER;
-        properties.setProperty(STUDIO_VIEW_DESIGNER_DIR_PROPERTY, studioViewDesignerDir);
-        properties.setProperty(VAADIN_PREFIX + PROJECT_BASEDIR, useProjectFolder ? projectBaseDir : studioViewDesignerDir);
-        properties.setProperty(VAADIN_PREFIX + BUILD_FOLDER, "build");
-        properties.setProperty(VAADIN_PREFIX + SERVLET_PARAMETER_ENABLE_PNPM, isPnpmEnabled);
-        // FIXME: something strange happens if we enable frontend hot deploy
-        //  see: https://github.com/vaadin/flow/issues/19748
-        properties.setProperty(VAADIN_PREFIX + FRONTEND_HOTDEPLOY, "false");
+    private boolean getUseProjectProperties() {
+        boolean useProjectProperties = true;
+        try {
+            useProjectProperties = parseBoolean(properties.getProperty(USE_PROJECT_PROPERTIES_PROPERTY, "true"));
+        } catch (Exception ignored) {
+        }
+        return useProjectProperties;
     }
 }
