@@ -18,6 +18,8 @@ package io.jmix.flowui.devserver.startup;
 
 import java.io.File;
 
+import com.vaadin.flow.server.Constants;
+
 public record StartupContext(
         String themeName,
         File projectFolder,
@@ -49,7 +51,7 @@ public record StartupContext(
     }
 
     private File getThemeFolder(File baseFolder) {
-        return getFrontendFolder(baseFolder).toPath().resolve("themes").toFile();
+        return getFrontendFolder(baseFolder).toPath().resolve(Constants.APPLICATION_THEME_ROOT).toFile();
     }
 
     private File getFrontendFolder(File baseFolder) {

@@ -27,9 +27,9 @@ import org.slf4j.LoggerFactory;
 
 import static com.vaadin.flow.server.Constants.PACKAGE_LOCK_JSON;
 
-public class CopyConfigurationFilesTask implements StartupTask {
+public class CopyFilesStartupTask implements StartupTask {
 
-    private static final Logger log = LoggerFactory.getLogger(CopyConfigurationFilesTask.class);
+    private static final Logger log = LoggerFactory.getLogger(CopyFilesStartupTask.class);
 
     @Override
     public void execute(StartupContext context) {
@@ -38,7 +38,7 @@ public class CopyConfigurationFilesTask implements StartupTask {
         copyPackageLockFile(context);
     }
 
-    private void copyThemes(StartupContext context) {
+    public static void copyThemes(StartupContext context) {
         logFileCopying("project themes");
 
         File projectThemeFolder = context.getProjectThemeFolder();
@@ -96,7 +96,7 @@ public class CopyConfigurationFilesTask implements StartupTask {
         }
     }
 
-    private void logFileCopying(String fileName) {
+    private static void logFileCopying(String fileName) {
         log.info("Copying {}...", fileName);
     }
 

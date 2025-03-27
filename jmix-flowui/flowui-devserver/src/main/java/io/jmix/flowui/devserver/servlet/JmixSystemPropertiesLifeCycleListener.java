@@ -22,9 +22,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Properties;
 
-import io.jmix.flowui.devserver.startup.CopyConfigurationFilesTask;
+import io.jmix.flowui.devserver.shutdown.ShutdownTask;
+import io.jmix.flowui.devserver.shutdown.SynchronizeThemesShutdownTask;
+import io.jmix.flowui.devserver.startup.CopyFilesStartupTask;
 import io.jmix.flowui.devserver.startup.StartupContext;
 import io.jmix.flowui.devserver.startup.StartupTask;
+import io.jmix.flowui.devserver.startup.SynchronizeThemesStartupTask;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.slf4j.Logger;
@@ -53,7 +56,12 @@ public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener
     private static final Logger log = LoggerFactory.getLogger(JmixSystemPropertiesLifeCycleListener.class);
 
     private static final List<Class<? extends StartupTask>> startupTasks = List.of(
-            CopyConfigurationFilesTask.class
+            CopyFilesStartupTask.class,
+            SynchronizeThemesStartupTask.class
+    );
+
+    private static final List<Class<? extends ShutdownTask>> shutdownTasks = List.of(
+            SynchronizeThemesShutdownTask.class
     );
 
     private final String projectBaseDir;
@@ -69,6 +77,20 @@ public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener
 
     @Override
     public void lifeCycleStarting(LifeCycle event) {
+        onStartup();
+    }
+
+    @Override
+    public void lifeCycleStopped(LifeCycle event) {
+        onShutdown();
+    }
+
+    @Override
+    public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+        onShutdown();
+    }
+
+    private void onStartup() {
         System.getProperties().putAll(properties);
 
         StartupContext context = new StartupContext(getProjectThemeName(),
@@ -79,6 +101,19 @@ public class JmixSystemPropertiesLifeCycleListener implements LifeCycle.Listener
                 log.info("Executing startup task {}", taskClass.getCanonicalName());
                 StartupTask task = taskClass.getConstructor().newInstance();
                 task.execute(context);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                     InvocationTargetException e) {
+                log.warn("Can not create instance of {}", taskClass.getCanonicalName());
+            }
+        }
+    }
+
+    private static void onShutdown() {
+        for (Class<? extends ShutdownTask> taskClass : shutdownTasks) {
+            try {
+                log.info("Executing shutdown task {}", taskClass.getCanonicalName());
+                ShutdownTask task = taskClass.getConstructor().newInstance();
+                task.execute();
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
                      InvocationTargetException e) {
                 log.warn("Can not create instance of {}", taskClass.getCanonicalName());
