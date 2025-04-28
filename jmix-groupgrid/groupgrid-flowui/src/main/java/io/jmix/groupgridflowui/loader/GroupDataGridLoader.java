@@ -26,12 +26,15 @@ import io.jmix.flowui.xml.layout.loader.component.AbstractGridLoader;
 import io.jmix.groupgridflowui.component.GroupDataGrid;
 import io.jmix.groupgridflowui.data.ContainerGroupDataGridItems;
 import io.jmix.groupgridflowui.data.EmptyGroupDataGridItems;
+import io.jmix.groupgridflowui.data.GroupDataGridItems;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GroupDataGridLoader extends AbstractGridLoader<GroupDataGrid<?>> {
+
+    public static final String GROUP_COLUMN_ELEMENT_NAME = "groupColumn";
 
     @Override
     protected GroupDataGrid<?> createComponent() {
@@ -49,10 +52,13 @@ public class GroupDataGridLoader extends AbstractGridLoader<GroupDataGrid<?>> {
     }
 
     @Override
-    protected void loadColumns(GroupDataGrid<?> resultComponent, Element columnsElement, MetaClass metaClass, FetchPlan fetchPlan) {
-        loadGroupColumns(resultComponent, columnsElement, metaClass);
+    protected void loadColumnsElementChild(GroupDataGrid<?> resultComponent, Element columnElement, MetaClass metaClass, boolean sortableColumns, boolean resizableColumns) {
+        if (GROUP_COLUMN_ELEMENT_NAME.equals(columnElement.getName())) {
+            loadGroupColumns(resultComponent, columnElement, metaClass, sortableColumns, resizableColumns);
+            return;
+        }
 
-        super.loadColumns(resultComponent, columnsElement, metaClass, fetchPlan);
+        super.loadColumnsElementChild(resultComponent, columnElement, metaClass, sortableColumns, resizableColumns);
     }
 
     @Override
@@ -71,23 +77,16 @@ public class GroupDataGridLoader extends AbstractGridLoader<GroupDataGrid<?>> {
                 resultComponent.getActionsSupport()::setShowActionsInContextMenuEnabled);
     }
 
-    protected void loadGroupColumns(GroupDataGrid<?> resultComponent, Element columnsElement, MetaClass metaClass) {
-        Element groupElement = columnsElement.element("groupColumn");
-        if (groupElement == null) {
-            return;
-        }
-
-        resultComponent.addHierarchyColumn();
-
-        boolean sortable = loadBoolean(columnsElement, "sortable").orElse(true);
-        boolean resizable = loadBoolean(columnsElement, "resizable").orElse(false);
-
+    protected void loadGroupColumns(GroupDataGrid<?> resultComponent, Element groupColumnElement,
+                                    MetaClass metaClass, boolean sortableColumns, boolean resizableColumns) {
         List<MetaPropertyPath> groupProperties = new ArrayList<>();
 
-        List<Element> columnElements = groupElement.elements("column");
+        // TODO: pinyazhin, when add a column?
+        resultComponent.addHierarchyColumn();
+
+        List<Element> columnElements = groupColumnElement.elements("column");
         for (Element columnElement : columnElements) {
-            // todo rp loadGroupAllowed and create GroupDataGridColumn
-            loadColumnsElementChild(resultComponent, columnElement, metaClass, sortable, resizable);
+            loadColumnsElementChild(resultComponent, columnElement, metaClass, sortableColumns, resizableColumns);
 
             // Skip property if not visible
             String visible = columnElement.attributeValue("visible");
@@ -107,28 +106,31 @@ public class GroupDataGridLoader extends AbstractGridLoader<GroupDataGrid<?>> {
         }
 
         if (!groupProperties.isEmpty()) {
-            getComponentContext().addPreInitTask(new InitTask() {
-                @Override
-                public void execute(ComponentContext context, View<?> view) {
-                    // Do nothing
-                }
+            getComponentContext().addPreInitTask(new GroupItemsInitTask(groupProperties));
+        }
+    }
 
-                @Override
-                public void execute(Context context) {
-                    InitTask.super.execute(context);
+    protected class GroupItemsInitTask implements InitTask {
 
-                    // enable grouping columns from descriptor if columnReorderingAllowed = false
-//                        boolean reorderDisabled = !resultComponent.getColumnReorderingAllowed();
-//                        component.setColumnReorderingAllowed(true);
+        protected final List<MetaPropertyPath> groupProperties;
 
-                    resultComponent.getItems().groupBy(groupProperties.toArray(new MetaPropertyPath[0]));
+        public GroupItemsInitTask(List<MetaPropertyPath> groupProperties) {
+            this.groupProperties = groupProperties;
+        }
 
-//                        if (reorderDisabled) {
-//                            component.setColumnReorderingAllowed(false);
-//                        }
-                }
-            });
+        @Override
+        public void execute(ComponentContext context, View<?> view) {
+            // Is not invoked. Do nothing.
+        }
 
+        @Override
+        public void execute(Context context) {
+            InitTask.super.execute(context);
+
+            GroupDataGridItems<?> items = resultComponent.getItems();
+            if (items != null) {
+                items.groupBy(groupProperties.toArray(new MetaPropertyPath[0]));
+            }
         }
     }
 }

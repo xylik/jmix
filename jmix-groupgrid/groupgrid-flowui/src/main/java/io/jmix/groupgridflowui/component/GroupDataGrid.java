@@ -276,7 +276,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return (DataGridColumn<E>) super.addColumn(propertyName);
     }
 
-    // TODO: rp
+    // TODO: pinyazhin, when add a column?
     public Column<E> addHierarchyColumn() {
         Column<E> column = addColumn(LitRenderer.<E>of(
                         "<vaadin-grid-tree-toggle @click=${onClick} .leaf=${!item.children} .expanded=${model.expanded} .level=${model.level}>"

@@ -190,7 +190,7 @@ public abstract class AbstractGridLoader<T extends Grid & EnhancedDataGrid & Has
             // In case of includeAll, EditorActionsColumn will be place at the end
             loadEditorActionsColumns(resultComponent, columnsElement);
         } else {
-            List<Element> columnElements = columnsElement.elements("column");
+            List<Element> columnElements = columnsElement.elements();
             for (Element columnElement : columnElements) {
                 loadColumnsElementChild(resultComponent, columnElement, metaClass, sortable, resizable);
             }

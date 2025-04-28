@@ -20,43 +20,111 @@
            xmlns="http://jmix.io/schema/groupdg/ui"
            elementFormDefault="qualified">
 
-    <xs:element name="groupDataGrid" type="groupDataGridColumnComponent"/>
+    <xs:element name="groupDataGrid" type="groupDataGridComponent"/>
 
     <!-- GroupDataGrid-->
-    <!-- todo rp -->
     <xs:complexType name="groupDataGridComponent">
         <xs:complexContent>
-            <xs:extension base="layout:dataGridComponent">
-                <xs:sequence>
-                    <xs:element name="columns" type="groupDataGridColumnsType"/>
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
+            <xs:extension base="layout:baseComponent">
+                <xs:all>
+                    <xs:element name="actions" minOccurs="0">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:choice maxOccurs="unbounded">
+                                    <xs:element name="action" type="layout:gridAction"/>
+                                </xs:choice>
+                            </xs:sequence>
 
-    <xs:complexType name="groupDataGridColumnComponent">
-        <xs:complexContent>
-            <xs:extension base="layout:dataGridColumnComponent">
-                <xs:attribute name="groupAllowed" type="xs:boolean"/>
-            </xs:extension>
-        </xs:complexContent>
-    </xs:complexType>
-
-    <xs:complexType name="groupDataGridColumnsType">
-        <xs:complexContent>
-            <xs:extension base="layout:dataGridColumnsType">
-                <xs:sequence>
-                    <xs:element name="groupColumn" minOccurs="0">
+                            <xs:attribute name="showInContextMenuEnabled" type="xs:boolean"/>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="columns">
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
+                                <!--TODO: pinyazhin, check inline editor -->
+                                <!--<xs:element name="editorActionsColumn"
+                                            type="layout:dataGridEditorActionsColumn"
+                                            minOccurs="0"/>-->
+                                <xs:element name="groupColumn" minOccurs="0">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element name="column"
+                                                        maxOccurs="unbounded"
+                                                        type="groupDataGridColumnComponent"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
                             </xs:sequence>
+
+                            <xs:attributeGroup ref="layout:columnsLoadType"/>
+                            <xs:attribute name="sortable" type="xs:boolean"/>
+                            <xs:attribute name="resizable" type="xs:boolean"/>
                         </xs:complexType>
                     </xs:element>
+                    <xs:element name="contextMenu" minOccurs="0" type="layout:contextMenuType"/>
+                    <xs:element name="emptyStateComponent" minOccurs="0">
+                        <xs:complexType>
+                            <xs:group ref="layout:layoutOrComponent"/>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:all>
 
-                    <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
-                </xs:sequence>
+                <xs:attribute name="ariaLabel" type="layout:resourceString"/>
+                <xs:attribute name="pageSize" type="xs:integer"/>
+                <xs:attribute name="metaClass" type="xs:string"/>
+                <!--TODO: pinyazhin, check grouping rows dnd-->
+                <!--<xs:attribute name="dropMode" type="layout:gridDropMode"/>-->
+                <!--<xs:attribute name="rowsDraggable" type="xs:boolean"/>-->
+                <xs:attribute name="emptyStateText" type="layout:resourceString"/>
+                <xs:attribute name="themeNames" type="layout:gridThemeNames"/>
+                <xs:attribute name="dataContainer" type="xs:string"/>
+                <xs:attribute name="allRowsVisible" type="xs:boolean"/>
+                <!--TODO: pinyazhin, check inline editor -->
+                <!--<xs:attribute name="editorBuffered" type="xs:boolean"/>-->
+                <xs:attribute name="selectionMode" type="layout:gridSelectionMode"/>
+                <xs:attribute name="detailsVisibleOnClick" type="xs:boolean"/>
+                <xs:attribute name="columnReorderingAllowed" type="xs:boolean"/>
+                <xs:attribute name="nestedNullBehavior" type="layout:gridNestedNullBehaviorEnum"/>
+                <xs:attribute name="columnRendering" type="layout:gridColumnRendering"/>
+                <!--TODO: pinyazhin, implement aggregation -->
+                <!--<xs:attribute name="aggregatable" type="xs:boolean"/>-->
+                <!--<xs:attribute name="aggregationPosition" type="layout:aggregationPosition"/>-->
+                <xs:attribute name="multiSort" type="xs:boolean"/>
+                <xs:attribute name="multiSortPriority" type="layout:gridMultiSortPriority"/>
+                <xs:attribute name="multiSortOnShiftClickOnly" type="xs:boolean"/>
+
+                <xs:attributeGroup ref="layout:hasSize"/>
+                <xs:attributeGroup ref="layout:hasEnabled"/>
+                <xs:attributeGroup ref="layout:hasFocusableAttributes"/>
+                <xs:attributeGroup ref="layout:hasClassNames"/>
             </xs:extension>
         </xs:complexContent>
+    </xs:complexType>
+
+    <!-- Column-->
+    <xs:complexType name="groupDataGridColumnComponent">
+        <xs:sequence minOccurs="0">
+            <!--TODO: pinyazhin, implement aggregation -->
+            <!--<xs:element name="aggregation" type="gridAggregationType"/>-->
+            <xs:group ref="layout:renderers"/>
+            <xs:element name="fragmentRenderer" type="layout:fragmentRendererElement"/>
+        </xs:sequence>
+
+        <xs:attribute name="key" type="xs:string"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="header" type="layout:resourceString"/>
+        <xs:attribute name="footer" type="layout:resourceString"/>
+        <xs:attribute name="frozen" type="xs:boolean"/>
+        <xs:attribute name="property" type="xs:string"/>
+        <xs:attribute name="sortable" type="xs:boolean"/>
+        <xs:attribute name="filterable" type="xs:boolean"/>
+        <xs:attribute name="flexGrow" type="xs:integer"/>
+        <xs:attribute name="resizable" type="xs:boolean"/>
+        <xs:attribute name="autoWidth" type="xs:boolean"/>
+        <xs:attribute name="textAlign" type="layout:gridColumnTextAlignEnum"/>
+        <!--TODO: pinyazhin, check inline editor -->
+        <!--<xs:attribute name="editable" type="xs:boolean"/>-->
     </xs:complexType>
 </xs:schema>
