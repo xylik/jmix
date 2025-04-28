@@ -17,7 +17,6 @@
 package io.jmix.groupgridflowui.loader;
 
 import com.google.common.base.Strings;
-import io.jmix.core.FetchPlan;
 import io.jmix.core.Metadata;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;

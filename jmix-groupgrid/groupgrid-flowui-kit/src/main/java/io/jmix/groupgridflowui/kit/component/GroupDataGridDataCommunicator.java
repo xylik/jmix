@@ -27,7 +27,11 @@ import elemental.json.JsonArray;
 
 public class GroupDataGridDataCommunicator<T> extends HierarchicalDataCommunicator<T> {
 
-    public GroupDataGridDataCommunicator(CompositeDataGenerator<T> dataGenerator, HierarchicalArrayUpdater arrayUpdater, SerializableConsumer<JsonArray> dataUpdater, StateNode stateNode, SerializableSupplier<ValueProvider<T, String>> uniqueKeyProviderSupplier) {
+    public GroupDataGridDataCommunicator(CompositeDataGenerator<T> dataGenerator,
+                                         HierarchicalArrayUpdater arrayUpdater,
+                                         SerializableConsumer<JsonArray> dataUpdater,
+                                         StateNode stateNode,
+                                         SerializableSupplier<ValueProvider<T, String>> uniqueKeyProviderSupplier) {
         super(dataGenerator, arrayUpdater, dataUpdater, stateNode, uniqueKeyProviderSupplier);
     }
 }

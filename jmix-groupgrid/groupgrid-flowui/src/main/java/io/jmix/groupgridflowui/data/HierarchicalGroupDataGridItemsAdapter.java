@@ -23,6 +23,7 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalQuery;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Metadata;
+import io.jmix.core.annotation.Internal;
 import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.data.BindingState;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+@Internal
 public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvider<T, Void>
         implements HierarchicalGroupDataGridItems<T> {
 
@@ -197,23 +199,26 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
         return dataGridItems.getItems();
     }
 
+    @Nullable
     @Override
     public T getItem(Object itemId) {
         return dataGridItems.getItem(itemId);
     }
 
+    @Nullable
     @Override
     public Object getItemValue(Object itemId, MetaPropertyPath propertyId) {
         return dataGridItems.getItemValue(itemId, propertyId);
     }
 
+    @Nullable
     @Override
     public T getSelectedItem() {
         return dataGridItems.getSelectedItem();
     }
 
     @Override
-    public void setSelectedItem(T item) {
+    public void setSelectedItem(@Nullable T item) {
         dataGridItems.setSelectedItem(item);
     }
 
@@ -276,7 +281,8 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
         return null;
     }
 
-    public GroupDataGridItems<T> getDataGridItems() {
+    @Override
+    public GroupDataGridItems<T> getGroupDataGridItems() {
         return dataGridItems;
     }
 

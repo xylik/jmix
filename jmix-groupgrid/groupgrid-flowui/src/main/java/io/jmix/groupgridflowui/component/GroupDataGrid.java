@@ -122,8 +122,8 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     @Override
     public GroupDataGridItems<E> getItems() {
         GroupDataGridItems<E> dataGridItems = gridDelegate.getItems();
-        if (dataGridItems instanceof HierarchicalGroupDataGridItemsAdapter<E> wrapper) {
-            return wrapper.getDataGridItems();
+        if (dataGridItems instanceof HierarchicalGroupDataGridItems<E> hierarchicalGroupDataGridItems) {
+            return hierarchicalGroupDataGridItems.getGroupDataGridItems();
         }
         return dataGridItems;
     }
@@ -132,9 +132,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     @Override
     public GridDataView<E> setItems(DataProvider<E, Void> dataProvider) {
         if (dataProvider instanceof GroupDataGridItems dataGridItems) {
-            HierarchicalGroupDataGridItemsAdapter gridItemsAdapter =
-                    new HierarchicalGroupDataGridItemsAdapter<>(dataGridItems,
-                            applicationContext.getBean(Metadata.class));
+            HierarchicalGroupDataGridItems<E> gridItemsAdapter = createHierarchicalGroupDataGridItems(dataGridItems);
             gridDelegate.setItems(gridItemsAdapter);
             return super.setItems(gridItemsAdapter);
         }
@@ -317,32 +315,40 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     @Override
     public boolean isAggregatable() {
-        return gridDelegate.isAggregatable();
+        // // TODO: pinyazhin, aggregation
+        return false;
+        //return gridDelegate.isAggregatable();
     }
 
     @Override
     public void setAggregatable(boolean aggregatable) {
-        gridDelegate.setAggregatable(aggregatable);
+        // TODO: pinyazhin, aggregation
+        //gridDelegate.setAggregatable(aggregatable);
     }
 
     @Override
     public AggregationPosition getAggregationPosition() {
+        // TODO: pinyazhin, aggregation
         return gridDelegate.getAggregationPosition();
     }
 
     @Override
     public void setAggregationPosition(AggregationPosition position) {
+        // TODO: pinyazhin, aggregation
         gridDelegate.setAggregationPosition(position);
     }
 
     @Override
     public void addAggregation(Column<E> column, AggregationInfo info) {
-        gridDelegate.addAggregationInfo(column, info);
+        // TODO: pinyazhin, aggregation
+        //gridDelegate.addAggregationInfo(column, info);
     }
 
     @Override
     public Map<Column<E>, Object> getAggregationResults() {
-        return gridDelegate.getAggregationResults();
+        // TODO: pinyazhin, aggregation
+        return Collections.emptyMap();
+        //return gridDelegate.getAggregationResults();
     }
 
     /**
@@ -484,8 +490,13 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     }
 
+    @SuppressWarnings("unchecked")
     protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> createDelegate() {
         return applicationContext.getBean(GroupGridDelegate.class, this);
+    }
+
+    protected HierarchicalGroupDataGridItems<E> createHierarchicalGroupDataGridItems(GroupDataGridItems<E> items) {
+        return new HierarchicalGroupDataGridItemsAdapter<>(items, applicationContext.getBean(Metadata.class));
     }
 
     protected void onAfterApplyColumnSecurity(AbstractGridDelegate.ColumnSecurityContext<E> context) {

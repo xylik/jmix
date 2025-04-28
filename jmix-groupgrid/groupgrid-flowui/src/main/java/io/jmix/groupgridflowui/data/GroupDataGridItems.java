@@ -67,7 +67,7 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
     List<GroupInfo> getGroupPath(T item);
 
     /**
-     * @return item ids that are contained in the selected group
+     * @return items that are contained in the selected group
      */
     Collection<T> getGroupItems(GroupInfo groupId);
 

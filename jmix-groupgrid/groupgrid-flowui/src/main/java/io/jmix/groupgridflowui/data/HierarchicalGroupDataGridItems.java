@@ -17,13 +17,42 @@
 package io.jmix.groupgridflowui.data;
 
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataProvider;
+import io.jmix.core.annotation.Internal;
+import io.jmix.groupgridflowui.component.GroupDataGrid;
 import org.springframework.lang.Nullable;
 
+/**
+ * Represents hierarchical data provider for {@link GroupDataGrid}.
+ *
+ * @param <T> item type
+ */
+@Internal
 public interface HierarchicalGroupDataGridItems<T> extends GroupDataGridItems<T>, HierarchicalDataProvider<T, Void> {
 
+    /**
+     * Returns {@link GroupInfo} by a group item.
+     * <p>
+     * Group item is an entity object that represents a grouping row in a {@link GroupDataGrid}.
+     *
+     * @param groupItem a group item
+     * @return group info or {@code null} if there is no group info for the given item
+     */
     @Nullable
     GroupInfo getGroupByItem(T groupItem);
 
+    /**
+     * Returns a group item by a {@link GroupInfo}.
+     *
+     * @param group a group info
+     * @return group item or {@code null} if there is no item for the given group info
+     */
     @Nullable
     T getItemByGroup(GroupInfo group);
+
+    /**
+     * @return group data grid items
+     */
+    default GroupDataGridItems<T> getGroupDataGridItems() {
+        return this;
+    }
 }
