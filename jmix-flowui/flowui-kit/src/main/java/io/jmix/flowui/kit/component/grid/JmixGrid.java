@@ -17,11 +17,7 @@
 package io.jmix.flowui.kit.component.grid;
 
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridArrayUpdater;
-import com.vaadin.flow.component.grid.GridArrayUpdater.UpdateQueueData;
 import com.vaadin.flow.component.grid.HeaderRow;
-import com.vaadin.flow.data.provider.ArrayUpdater;
-import com.vaadin.flow.function.SerializableBiFunction;
 import com.vaadin.flow.function.SerializableFunction;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.HasActions;
@@ -33,15 +29,6 @@ import jakarta.annotation.Nullable;
 import java.util.Collection;
 
 public class JmixGrid<T> extends Grid<T> implements SelectionChangeNotifier<Grid<T>, T>, HasActions, HasSubParts {
-
-    public JmixGrid() {
-    }
-
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public <U extends JmixUpdateQueue> JmixGrid(SerializableBiFunction<UpdateQueueData, Integer, U> updateQueueBuilder,
-                    JmixDataCommunicatorBuilder dataCommunicatorBuilder) {
-        super(50, (SerializableBiFunction) updateQueueBuilder, dataCommunicatorBuilder);
-    }
 
     protected GridActionsSupport<JmixGrid<T>, T> actionsSupport;
 
@@ -101,16 +88,5 @@ public class JmixGrid<T> extends Grid<T> implements SelectionChangeNotifier<Grid
 
     protected GridActionsSupport<JmixGrid<T>, T> createActionsSupport() {
         return new GridActionsSupport<>(this);
-    }
-
-    public static abstract class JmixDataCommunicatorBuilder<T, U extends ArrayUpdater>
-            extends DataCommunicatorBuilder<T, U> {
-    }
-
-    public static abstract class JmixUpdateQueue extends UpdateQueue {
-
-        public JmixUpdateQueue(UpdateQueueData data, int size) {
-            super(data, size);
-        }
     }
 }

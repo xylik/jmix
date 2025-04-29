@@ -19,11 +19,6 @@ package io.jmix.groupgridflowui.component;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridSelectionModel;
-import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
-import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
-import com.vaadin.flow.component.grid.dataview.GridDataView;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -36,18 +31,21 @@ import io.jmix.core.common.util.Preconditions;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.component.*;
-import io.jmix.flowui.component.delegate.AbstractGridDelegate;
 import io.jmix.flowui.component.grid.*;
-import io.jmix.flowui.component.grid.editor.DataGridEditor;
-import io.jmix.flowui.component.grid.editor.DataGridEditorImpl;
-import io.jmix.flowui.fragment.FragmentUtils;
 import io.jmix.flowui.kit.component.KeyCombination;
-import io.jmix.flowui.kit.component.grid.GridActionsSupport;
-import io.jmix.flowui.kit.component.grid.JmixGrid;
-import io.jmix.flowui.kit.component.grid.JmixGridContextMenu;
+import io.jmix.groupgridflowui.component.editor.DataGridEditor;
+import io.jmix.groupgridflowui.component.editor.DataGridEditorImpl;
 import io.jmix.groupgridflowui.data.*;
+import io.jmix.groupgridflowui.delegate.AbstractGroupGridDelegate;
 import io.jmix.groupgridflowui.delegate.GroupGridDelegate;
 import io.jmix.groupgridflowui.kit.component.JmixGroupGrid;
+import io.jmix.groupgridflowui.kit.component.JmixGroupGridActionsSupport;
+import io.jmix.groupgridflowui.kit.component.JmixGroupGridContextMenu;
+import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
+import io.jmix.groupgridflowui.kit.vaadin.grid.GridSelectionModel;
+import io.jmix.groupgridflowui.kit.vaadin.grid.ItemDoubleClickEvent;
+import io.jmix.groupgridflowui.kit.vaadin.grid.contextmenu.GridContextMenu;
+import io.jmix.groupgridflowui.kit.vaadin.grid.dataview.GridDataView;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -59,14 +57,15 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 @JsModule("@vaadin/grid/src/vaadin-grid-tree-toggle.js")
-public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataComponent<E>, LookupComponent.MultiSelectLookupComponent<E>,
-        EnhancedDataGrid<E>, SupportsEnterPress<GroupDataGrid<E>>, ApplicationContextAware, InitializingBean {
+public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataComponent<E>,
+        LookupComponent.MultiSelectLookupComponent<E>, EnhancedGroupDataGrid<E>, SupportsEnterPress<GroupDataGrid<E>>,
+        ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
     protected MetadataTools metadataTools;
 
     protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> gridDelegate;
-    protected JmixGridContextMenu<E> contextMenu;
+    protected JmixGroupGridContextMenu<E> contextMenu;
 
     protected boolean editorCreated = false;
 
@@ -313,43 +312,43 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return editorCreated;
     }
 
-    @Override
+    /*@Override
     public boolean isAggregatable() {
         // // TODO: pinyazhin, aggregation
         return false;
         //return gridDelegate.isAggregatable();
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void setAggregatable(boolean aggregatable) {
         // TODO: pinyazhin, aggregation
         //gridDelegate.setAggregatable(aggregatable);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public AggregationPosition getAggregationPosition() {
         // TODO: pinyazhin, aggregation
         return gridDelegate.getAggregationPosition();
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void setAggregationPosition(AggregationPosition position) {
         // TODO: pinyazhin, aggregation
         gridDelegate.setAggregationPosition(position);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void addAggregation(Column<E> column, AggregationInfo info) {
         // TODO: pinyazhin, aggregation
         //gridDelegate.addAggregationInfo(column, info);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public Map<Column<E>, Object> getAggregationResults() {
         // TODO: pinyazhin, aggregation
         return Collections.emptyMap();
         //return gridDelegate.getAggregationResults();
-    }
+    }*/
 
     /**
      * <strong>Note:</strong> If column reordering is enabled with
@@ -409,8 +408,8 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
         if (isEditorCreated()) {
             DataGridEditor<E> editor = getEditor();
-            if (editor instanceof DataGridDataProviderChangeObserver) {
-                ((DataGridDataProviderChangeObserver) editor).dataProviderChanged();
+            if (editor instanceof GroupDataGridDataProviderChangeObserver) {
+                ((GroupDataGridDataProviderChangeObserver) editor).dataProviderChanged();
             }
         }
     }
@@ -428,14 +427,14 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     @SuppressWarnings({"unchecked"})
     @Override
-    protected GridActionsSupport<JmixGrid<E>, E> createActionsSupport() {
-        return applicationContext.getBean(DataGridActionsSupport.class, this);
+    protected JmixGroupGridActionsSupport<JmixGroupGrid<E>, E> createActionsSupport() {
+        return applicationContext.getBean(GroupDataGridActionsSupport.class, this);
     }
 
     @Override
-    public JmixGridContextMenu<E> getContextMenu() {
+    public JmixGroupGridContextMenu<E> getContextMenu() {
         if (contextMenu == null) {
-            contextMenu = new JmixGridContextMenu<>(this);
+            contextMenu = new JmixGroupGridContextMenu<>(this);
         }
         return contextMenu;
     }
@@ -446,7 +445,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
                 " can have only one context menu attached, use getContextMenu() to retrieve it");
     }
 
-    @Nullable
+    /*@Nullable // TODO: pinyazhin, subPart
     @Override
     public Object getSubPart(String name) {
         Object column = super.getSubPart(name);
@@ -478,7 +477,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         }
 
         return null;
-    }
+    }*/
 
     // TODO: rp
     public void expand(GroupInfo group) {
@@ -499,7 +498,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return new HierarchicalGroupDataGridItemsAdapter<>(items, applicationContext.getBean(Metadata.class));
     }
 
-    protected void onAfterApplyColumnSecurity(AbstractGridDelegate.ColumnSecurityContext<E> context) {
+    protected void onAfterApplyColumnSecurity(AbstractGroupGridDelegate.ColumnSecurityContext<E> context) {
         if (!context.isPropertyEnabled()) {
             // Remove column from component while GridDelegate stores this column
             super.removeColumn(context.getColumn());

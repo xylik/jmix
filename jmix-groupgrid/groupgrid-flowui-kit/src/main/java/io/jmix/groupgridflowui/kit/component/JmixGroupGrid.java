@@ -17,9 +17,8 @@
 package io.jmix.groupgridflowui.kit.component;
 
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.grid.GridArrayUpdater;
 import com.vaadin.flow.component.internal.AllowInert;
-import com.vaadin.flow.component.treegrid.TreeGridArrayUpdater;
+import com.vaadin.flow.data.provider.ArrayUpdater;
 import com.vaadin.flow.data.provider.CompositeDataGenerator;
 import com.vaadin.flow.data.provider.DataCommunicator;
 import com.vaadin.flow.data.provider.hierarchy.HierarchicalArrayUpdater;
@@ -31,16 +30,26 @@ import com.vaadin.flow.server.VaadinRequest;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.JsonValue;
-import io.jmix.flowui.kit.component.grid.JmixGrid;
+import io.jmix.flowui.kit.action.Action;
+import io.jmix.flowui.kit.component.HasActions;
+import io.jmix.flowui.kit.component.SelectionChangeNotifier;
+import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
+import io.jmix.groupgridflowui.kit.vaadin.grid.GridArrayUpdater;
+import io.jmix.groupgridflowui.kit.vaadin.grid.GridArrayUpdater.UpdateQueueData;
+import io.jmix.groupgridflowui.kit.vaadin.treegrid.TreeGrid;
+import io.jmix.groupgridflowui.kit.vaadin.treegrid.TreeGridArrayUpdater;
+import jakarta.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class JmixGroupGrid<T> extends JmixGrid<T> {
+public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier<Grid<T>, T>, HasActions {
+
+    protected JmixGroupGridActionsSupport<JmixGroupGrid<T>, T> actionsSupport;
 
     public JmixGroupGrid() {
-        super(JmixGroupDataGridUpdateQueue::new, new JmixGroupDataGridDataCommunicatorBuilder<>());
+        super(50, JmixGroupDataGridUpdateQueue::new, new JmixGroupDataGridDataCommunicatorBuilder<>());
 
         setUniqueKeyProperty("key");
         getArrayUpdater().getUpdateQueueData()
@@ -49,7 +58,43 @@ public class JmixGroupGrid<T> extends JmixGrid<T> {
         addItemHasChildrenPathGenerator();
     }
 
+    @Override
+    public void addAction(Action action) {
+        getActionsSupport().addAction(action);
+    }
+
+    @Override
+    public void addAction(Action action, int index) {
+        getActionsSupport().addAction(action, index);
+    }
+
+    @Override
+    public void removeAction(Action action) {
+        getActionsSupport().removeAction(action);
+    }
+
+    @Override
+    public Collection<Action> getActions() {
+        return getActionsSupport().getActions();
+    }
+
+    @Nullable
+    @Override
+    public Action getAction(String id) {
+        return getActionsSupport().getAction(id).orElse(null);
+    }
+
+    public JmixGroupGridActionsSupport<JmixGroupGrid<T>, T> getActionsSupport() {
+        if (actionsSupport == null) {
+            actionsSupport = createActionsSupport();
+        }
+        return actionsSupport;
+    }
+
     // TODO: rp
+    /**
+     * See {@link TreeGrid} and {@code addItemHasChildrenPathGenerator()}.
+     */
     private void addItemHasChildrenPathGenerator() {
         addDataGenerator((T item, JsonObject jsonObject) -> {
             if (getDataCommunicator().hasChildren(item)) {
@@ -59,8 +104,8 @@ public class JmixGroupGrid<T> extends JmixGrid<T> {
     }
 
     @Override
-    public GroupDataGridDataCommunicator<T> getDataCommunicator() {
-        return (GroupDataGridDataCommunicator<T>) super.getDataCommunicator();
+    public JmixGroupGridDataCommunicator<T> getDataCommunicator() {
+        return (JmixGroupGridDataCommunicator<T>) super.getDataCommunicator();
     }
 
     protected void doExpand(Collection<T> items, boolean userOriginated) {
@@ -73,9 +118,13 @@ public class JmixGroupGrid<T> extends JmixGrid<T> {
         // TODO: rp Fire event
     }
 
+    protected JmixGroupGridActionsSupport<JmixGroupGrid<T>, T> createActionsSupport() {
+        return new JmixGroupGridActionsSupport<>(this);
+    }
+
     @Override
     protected GridArrayUpdater createDefaultArrayUpdater(
-            SerializableBiFunction<GridArrayUpdater.UpdateQueueData, Integer, UpdateQueue> updateQueueFactory) {
+            SerializableBiFunction<UpdateQueueData, Integer, UpdateQueue> updateQueueFactory) {
         return new GroupDataGridArrayUpdaterImpl(updateQueueFactory);
     }
 
@@ -129,7 +178,7 @@ public class JmixGroupGrid<T> extends JmixGrid<T> {
                 element.callJsFunction("$connector.updateHierarchicalData", data);
             };
 
-            return new GroupDataGridDataCommunicator<>(dataGenerator, arrayUpdater, dataUpdater, element.getNode(),
+            return new JmixGroupGridDataCommunicator<>(dataGenerator, arrayUpdater, dataUpdater, element.getNode(),
                     uniqueKeyProviderSupplier);
         }
     }
@@ -139,7 +188,7 @@ public class JmixGroupGrid<T> extends JmixGrid<T> {
 
         private SerializableConsumer<List<JsonValue>> arrayUpdateListener;
 
-        private JmixGroupDataGridUpdateQueue(GridArrayUpdater.UpdateQueueData data, int size) {
+        private JmixGroupDataGridUpdateQueue(UpdateQueueData data, int size) {
             super(data, size);
         }
 
@@ -262,6 +311,18 @@ public class JmixGroupGrid<T> extends JmixGrid<T> {
         @Override
         public UpdateQueueData getUpdateQueueData() {
             return data;
+        }
+    }
+
+
+    public static abstract class JmixDataCommunicatorBuilder<T, U extends ArrayUpdater>
+            extends DataCommunicatorBuilder<T, U> {
+    }
+
+    public static abstract class JmixUpdateQueue extends UpdateQueue {
+
+        public JmixUpdateQueue(UpdateQueueData data, int size) {
+            super(data, size);
         }
     }
 }

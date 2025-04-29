@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package io.jmix.flowui.kit.component.grid;
+package io.jmix.groupgridflowui.kit.component;
 
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.contextmenu.GridMenuItem;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.delegate.AbstractActionsHolderSupport;
+import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
+import io.jmix.groupgridflowui.kit.vaadin.grid.contextmenu.GridMenuItem;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class GridActionsSupport<C extends Grid<T>, T> extends AbstractActionsHolderSupport<C> {
+public class JmixGroupGridActionsSupport<C extends Grid<T>, T> extends AbstractActionsHolderSupport<C> {
 
-    protected Map<Action, GridMenuItemActionWrapper<T>> actionBinding = new HashMap<>();
+    protected Map<Action, JmixGroupGridMenuItemActionWrapper<T>> actionBinding = new HashMap<>();
 
-    protected JmixGridContextMenu<T> contextMenu;
+    protected JmixGroupGridContextMenu<T> contextMenu;
     protected boolean showActionsInContextMenuEnabled = true;
 
-    public GridActionsSupport(C component) {
+    public JmixGroupGridActionsSupport(C component) {
         super(component);
     }
 
@@ -47,7 +47,7 @@ public class GridActionsSupport<C extends Grid<T>, T> extends AbstractActionsHol
 
     protected void addContextMenuItem(Action action) {
         int index = actions.indexOf(action);
-        GridMenuItemActionWrapper<T> wrapper = createContextMenuItemComponent();
+        JmixGroupGridMenuItemActionWrapper<T> wrapper = createContextMenuItemComponent();
         GridMenuItem<T> menuItem = getContextMenu().addItemAtIndex(index, wrapper);
 
         wrapper.setMenuItem(menuItem);
@@ -56,11 +56,11 @@ public class GridActionsSupport<C extends Grid<T>, T> extends AbstractActionsHol
         actionBinding.put(action, wrapper);
     }
 
-    protected GridMenuItemActionWrapper<T> createContextMenuItemComponent() {
-        return new GridMenuItemActionWrapper<>();
+    protected JmixGroupGridMenuItemActionWrapper<T> createContextMenuItemComponent() {
+        return new JmixGroupGridMenuItemActionWrapper<>();
     }
 
-    protected JmixGridContextMenu<T> getContextMenu() {
+    protected JmixGroupGridContextMenu<T> getContextMenu() {
         if (contextMenu == null) {
             initContextMenu();
         }
@@ -68,13 +68,13 @@ public class GridActionsSupport<C extends Grid<T>, T> extends AbstractActionsHol
     }
 
     protected void initContextMenu() {
-        contextMenu = new JmixGridContextMenu<>();
+        contextMenu = new JmixGroupGridContextMenu<>();
         contextMenu.setTarget(component);
         contextMenu.setVisible(false);
     }
 
     protected void updateContextMenu() {
-        JmixGridContextMenu<T> contextMenu = getContextMenu();
+        JmixGroupGridContextMenu<T> contextMenu = getContextMenu();
         boolean empty = contextMenu.getItems().isEmpty();
         boolean visible = contextMenu.isVisible();
 
@@ -103,7 +103,7 @@ public class GridActionsSupport<C extends Grid<T>, T> extends AbstractActionsHol
     }
 
     protected void removeContextMenuItem(Action action) {
-        GridMenuItemActionWrapper<T> item = actionBinding.remove(action);
+        JmixGroupGridMenuItemActionWrapper<T> item = actionBinding.remove(action);
         item.setAction(null);
 
         getContextMenu().remove(item.getMenuItem());

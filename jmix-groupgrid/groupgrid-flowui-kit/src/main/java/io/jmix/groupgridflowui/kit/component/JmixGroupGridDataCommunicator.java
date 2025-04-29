@@ -25,9 +25,9 @@ import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.internal.StateNode;
 import elemental.json.JsonArray;
 
-public class GroupDataGridDataCommunicator<T> extends HierarchicalDataCommunicator<T> {
+public class JmixGroupGridDataCommunicator<T> extends HierarchicalDataCommunicator<T> {
 
-    public GroupDataGridDataCommunicator(CompositeDataGenerator<T> dataGenerator,
+    public JmixGroupGridDataCommunicator(CompositeDataGenerator<T> dataGenerator,
                                          HierarchicalArrayUpdater arrayUpdater,
                                          SerializableConsumer<JsonArray> dataUpdater,
                                          StateNode stateNode,

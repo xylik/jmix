@@ -16,7 +16,6 @@
 
 package io.jmix.groupgridflowui.delegate;
 
-import io.jmix.flowui.component.delegate.AbstractGridDelegate;
 import io.jmix.groupgridflowui.component.GroupDataGrid;
 import io.jmix.groupgridflowui.data.HierarchicalGroupDataGridItems;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component("flowui_GroupGridDelegate")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class GroupGridDelegate<E, ITEMS extends HierarchicalGroupDataGridItems<E>>
-        extends AbstractGridDelegate<GroupDataGrid<E>, E, ITEMS> {
+        extends AbstractGroupGridDelegate<GroupDataGrid<E>, E, ITEMS> {
 
     public GroupGridDelegate(GroupDataGrid<E> component) {
         super(component);

@@ -21,7 +21,6 @@ import io.jmix.core.Metadata;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.view.View;
-import io.jmix.flowui.xml.layout.loader.component.AbstractGridLoader;
 import io.jmix.groupgridflowui.component.GroupDataGrid;
 import io.jmix.groupgridflowui.data.ContainerGroupDataGridItems;
 import io.jmix.groupgridflowui.data.EmptyGroupDataGridItems;
@@ -31,7 +30,7 @@ import org.dom4j.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupDataGridLoader extends AbstractGridLoader<GroupDataGrid<?>> {
+public class GroupDataGridLoader extends AbstractGroupGridLoader<GroupDataGrid<?>> {
 
     public static final String GROUP_COLUMN_ELEMENT_NAME = "groupColumn";
 
