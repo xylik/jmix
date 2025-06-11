@@ -21,6 +21,7 @@ import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.FileRef;
+import io.jmix.core.MetadataTools;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
@@ -47,12 +48,14 @@ public class ReportExecutionListView extends StandardListView<ReportExecution> {
     @ViewComponent
     protected DataGrid<ReportExecution> executionsDataGrid;
 
-    @Autowired
+    @ViewComponent
     protected MessageBundle messageBundle;
     @Autowired
     protected Downloader downloader;
     @Autowired
     protected SecondsToTextFormatter durationFormatter;
+    @Autowired
+    protected MetadataTools metadataTools;
 
     protected List<Report> filterByReports;
 
@@ -94,20 +97,13 @@ public class ReportExecutionListView extends StandardListView<ReportExecution> {
         return super.getPageTitle();
     }
 
-    @Subscribe
-    public void onQueryParametersChange(final QueryParametersChangeEvent event) {
-        if (CollectionUtils.isNotEmpty(filterByReports)) {
-            executionsDl.setParameter("reportIds", filterByReports);
-        }
-    }
-
     protected String getReportsNames() {
         if (CollectionUtils.isEmpty(filterByReports)) {
             return "";
         }
 
         return filterByReports.stream()
-                .map(Report::getName)
+                .map(metadataTools::getInstanceName)
                 .collect(Collectors.joining(", "));
     }
 
@@ -121,5 +117,10 @@ public class ReportExecutionListView extends StandardListView<ReportExecution> {
 
     public void setFilterByReports(List<Report> filterByReports) {
         this.filterByReports = filterByReports;
+
+        if (CollectionUtils.isNotEmpty(filterByReports)) {
+            List<String> reportCodes = filterByReports.stream().map(Report::getCode).toList();
+            executionsDl.setParameter("reportCodes", reportCodes);
+        }
     }
 }
