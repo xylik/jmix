@@ -29,9 +29,11 @@ import io.jmix.flowui.view.StandardDetailView.InitEntityEvent;
 import io.jmix.flowui.view.StandardDetailView.ValidationEvent;
 import io.jmix.flowui.view.View.QueryParametersChangeEvent;
 import io.jmix.flowui.view.View.RestoreComponentsStateEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.lang.Nullable;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -219,8 +221,38 @@ public final class ViewControllerUtils {
         return detailView.getRouteParamName();
     }
 
+    /**
+     * Returns a list of application event listeners associated with a given {@link View}.
+     *
+     * @param view the {@link View} for which to retrieve the application event listeners
+     * @return a list of application event listeners associated with the specified {@link View}
+     */
+    public static List<ApplicationListener<?>> getApplicationEventListeners(View<?> view) {
+        return view.getApplicationEventListeners();
+    }
+
+    /**
+     * Sets the application event listeners for the specified {@link View}.
+     *
+     * @param view      the {@link View} for which to set the application event listeners
+     * @param listeners a list of application event listeners to be set for the {@link View},
+     *                  or {@code null} if no listeners should be associated
+     */
+    public static void setApplicationEventListeners(View<?> view,
+                                                    @Nullable List<ApplicationListener<?>> listeners) {
+        view.setApplicationEventListeners(listeners);
+    }
+
     @Internal
     public static void processBeforeEnterInternal(View<?> view, BeforeEnterEvent event) {
         view.processBeforeEnterInternal(event);
+    }
+
+    public static void configureDialogWindowHeader(View<?> view, DialogWindowHeader dialogWindowHeader) {
+        view.configureDialogWindowHeader(dialogWindowHeader);
+    }
+
+    public static void configureDialogWindowFooter(View<?> view, DialogWindowFooter dialogWindowFooter) {
+        view.configureDialogWindowFooter(dialogWindowFooter);
     }
 }
