@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -43,7 +43,7 @@ public class GridLazyDataView<T> extends AbstractLazyDataView<T> {
      *            the grid
      */
     public GridLazyDataView(DataCommunicator<T> dataCommunicator,
-            Grid<T> component) {
+                            Grid<T> component) {
         super(dataCommunicator, component);
     }
 

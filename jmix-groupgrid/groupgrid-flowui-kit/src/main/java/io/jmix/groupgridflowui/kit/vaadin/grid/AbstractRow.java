@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -296,7 +296,7 @@ abstract class AbstractRow<CELL extends AbstractCell> implements Serializable {
         }
 
         List<CELL> sortedCells = cells.stream().sorted((c1, c2) -> Integer
-                .compare(this.cells.indexOf(c1), this.cells.indexOf(c2)))
+                        .compare(this.cells.indexOf(c1), this.cells.indexOf(c2)))
                 .collect(Collectors.toList());
 
         int cellInsertIndex = this.cells.indexOf(sortedCells.get(0));
@@ -368,7 +368,7 @@ abstract class AbstractRow<CELL extends AbstractCell> implements Serializable {
     }
 
     private CELL joinCellsInPlace(Collection<CELL> cellsToJoin,
-            List<AbstractColumn<?>> columnsToJoin, int cellInsertIndex) {
+                                  List<AbstractColumn<?>> columnsToJoin, int cellInsertIndex) {
         Element parent = columnsToJoin.get(0).getElement().getParent();
         int elementInsertIndex = columnsToJoin.stream()
                 .mapToInt(col -> parent.indexOfChild(col.getElement())).min()
@@ -393,9 +393,9 @@ abstract class AbstractRow<CELL extends AbstractCell> implements Serializable {
     }
 
     private CELL moveColumnLayerAndJoinCells(Collection<CELL> cellsToJoin,
-            List<AbstractColumn<?>> columnsToJoin,
-            List<Column<?>> bottomColumnsToJoin, List<ColumnLayer> layers,
-            int layerInsertIndex, Grid<?> grid) {
+                                             List<AbstractColumn<?>> columnsToJoin,
+                                             List<Column<?>> bottomColumnsToJoin, List<ColumnLayer> layers,
+                                             int layerInsertIndex, Grid<?> grid) {
         grid.removeColumnLayer(layer);
         layerInsertIndex--;
 

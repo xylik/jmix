@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -54,14 +54,14 @@ public class ColumnPathRenderer<SOURCE> extends Renderer<SOURCE> {
      *            the value provider for the property
      */
     public ColumnPathRenderer(String property,
-            ValueProvider<SOURCE, ?> provider) {
+                              ValueProvider<SOURCE, ?> provider) {
         this.provider = provider;
         this.property = property;
     }
 
     @Override
     public Rendering<SOURCE> render(Element container,
-            DataKeyMapper<SOURCE> keyMapper, String rendererName) {
+                                    DataKeyMapper<SOURCE> keyMapper, String rendererName) {
         container.setProperty("path", property);
 
         // disables the automatic creation of headers when the path is used

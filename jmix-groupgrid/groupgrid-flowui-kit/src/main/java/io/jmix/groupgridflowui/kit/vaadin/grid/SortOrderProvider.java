@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,12 +15,12 @@
  */
 package io.jmix.groupgridflowui.kit.vaadin.grid;
 
+import java.util.stream.Stream;
+
 import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.function.SerializableFunction;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column;
-
-import java.util.stream.Stream;
 
 /**
  * Generates the sort orders when rows are sorted by a column.

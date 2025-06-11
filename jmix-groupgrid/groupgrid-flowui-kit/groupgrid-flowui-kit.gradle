@@ -21,4 +21,6 @@ archivesBaseName = 'jmix-groupgrid-flowui-kit'
 
 dependencies {
     api project(':flowui-kit')
+
+    compileOnly 'com.vaadin:vaadin-spring-boot-starter'
 }

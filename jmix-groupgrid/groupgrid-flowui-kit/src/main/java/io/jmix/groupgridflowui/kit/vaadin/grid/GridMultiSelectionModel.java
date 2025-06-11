@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,8 +15,10 @@
  */
 package io.jmix.groupgridflowui.kit.vaadin.grid;
 
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.selection.MultiSelect;
+import com.vaadin.flow.data.selection.MultiSelectionEvent;
 import com.vaadin.flow.data.selection.MultiSelectionListener;
 import com.vaadin.flow.data.selection.SelectionModel;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -89,6 +91,22 @@ public interface GridMultiSelectionModel<T>
      */
     Registration addMultiSelectionListener(
             MultiSelectionListener<Grid<T>, T> listener);
+
+    /**
+     * Adds a client item toggle listener that will be called when the user
+     * toggles the selection state of an item on the client-side.
+     * <p>
+     * This event follows {@link MultiSelectionEvent} and provides details about
+     * the item that was toggled, its new selection state, and whether the shift
+     * key was pressed during the selection. This can be helpful for
+     * implementing features like range selection.
+     *
+     * @param listener
+     *            the client item toggle listener, not {@code null}
+     * @return a registration for the listener
+     */
+    Registration addClientItemToggleListener(
+            ComponentEventListener<ClientItemToggleEvent<T>> listener);
 
     /**
      * Sets the select all checkbox visibility mode.

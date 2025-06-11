@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -120,6 +120,9 @@ public abstract class AbstractGridMultiSelectionModel<T>
         fireSelectionEvent(new MultiSelectionEvent<>(getGrid(),
                 getGrid().asMultiSelect(), oldSelection, true));
 
+        ComponentUtil.fireEvent(getGrid(), new ClientItemToggleEvent<>(
+                getGrid(), item, true, selectionColumn.isShiftKeyDown()));
+
         if (!isSelectAllCheckboxVisible()) {
             // Skip changing the state of Select All checkbox if it was
             // meant to be hidden
@@ -146,6 +149,9 @@ public abstract class AbstractGridMultiSelectionModel<T>
 
         fireSelectionEvent(new MultiSelectionEvent<>(getGrid(),
                 getGrid().asMultiSelect(), oldSelection, true));
+
+        ComponentUtil.fireEvent(getGrid(), new ClientItemToggleEvent<>(
+                getGrid(), item, false, selectionColumn.isShiftKeyDown()));
 
         long size = getDataProviderSize();
         selectionColumn.setSelectAllCheckboxState(false);
@@ -274,7 +280,7 @@ public abstract class AbstractGridMultiSelectionModel<T>
 
             @Override
             public void updateSelection(Set<T> addedItems,
-                    Set<T> removedItems) {
+                                        Set<T> removedItems) {
                 AbstractGridMultiSelectionModel.this.updateSelection(addedItems,
                         removedItems);
             }
@@ -311,6 +317,15 @@ public abstract class AbstractGridMultiSelectionModel<T>
                         .selectionChange((MultiSelectionEvent) event)));
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public Registration addClientItemToggleListener(
+            ComponentEventListener<ClientItemToggleEvent<T>> listener) {
+        Objects.requireNonNull(listener, "listener cannot be null");
+        return ComponentUtil.addListener(getGrid(), ClientItemToggleEvent.class,
+                (ComponentEventListener) listener);
+    }
+
     @Override
     public void setSelectAllCheckboxVisibility(
             SelectAllCheckboxVisibility selectAllCheckBoxVisibility) {
@@ -331,21 +346,21 @@ public abstract class AbstractGridMultiSelectionModel<T>
         }
 
         switch (selectAllCheckBoxVisibility) {
-        case DEFAULT:
-            return getGrid().getDataCommunicator().getDataProvider()
-                    .isInMemory();
-        case HIDDEN:
-            return false;
-        case VISIBLE:
-            // Don't show the Select All Checkbox for undefined size, even if
-            // the visible property is chosen. Select All Checkbox's state
-            // changing requires a size query, which is not expected for
-            // undefined size
-            return getGrid().getDataCommunicator().isDefinedSize();
-        default:
-            throw new IllegalStateException(String.format(
-                    "Select all checkbox visibility is set to an unsupported value: %s",
-                    selectAllCheckBoxVisibility));
+            case DEFAULT:
+                return getGrid().getDataCommunicator().getDataProvider()
+                        .isInMemory();
+            case HIDDEN:
+                return false;
+            case VISIBLE:
+                // Don't show the Select All Checkbox for undefined size, even if
+                // the visible property is chosen. Select All Checkbox's state
+                // changing requires a size query, which is not expected for
+                // undefined size
+                return getGrid().getDataCommunicator().isDefinedSize();
+            default:
+                throw new IllegalStateException(String.format(
+                        "Select all checkbox visibility is set to an unsupported value: %s",
+                        selectAllCheckBoxVisibility));
         }
     }
 
@@ -433,7 +448,7 @@ public abstract class AbstractGridMultiSelectionModel<T>
      * @return the stream of all descendant items
      */
     private Stream<T> fetchAllDescendants(T parent,
-            HierarchicalDataProvider<T, ?> dataProvider) {
+                                          HierarchicalDataProvider<T, ?> dataProvider) {
         if (parent != null && !dataProvider.hasChildren(parent)) {
             return Stream.empty();
         }
@@ -459,7 +474,7 @@ public abstract class AbstractGridMultiSelectionModel<T>
     }
 
     private void doUpdateSelection(Set<T> addedItems, Set<T> removedItems,
-            boolean userOriginated) {
+                                   boolean userOriginated) {
         Map<Object, T> addedItemsMap = mapItemsById(addedItems);
         Map<Object, T> removedItemsMap = mapItemsById(removedItems);
         addedItemsMap.keySet().stream().filter(removedItemsMap::containsKey)
@@ -471,7 +486,7 @@ public abstract class AbstractGridMultiSelectionModel<T>
     }
 
     private void doUpdateSelection(Map<Object, T> addedItems,
-            Map<Object, T> removedItems, boolean userOriginated) {
+                                   Map<Object, T> removedItems, boolean userOriginated) {
 
         if (selected.keySet().containsAll(addedItems.keySet()) && Collections
                 .disjoint(selected.keySet(), removedItems.keySet())) {
@@ -504,7 +519,7 @@ public abstract class AbstractGridMultiSelectionModel<T>
     }
 
     private void sendSelectionUpdate(Set<T> updatedItems,
-            Consumer<Set<T>> clientSideUpdater) {
+                                     Consumer<Set<T>> clientSideUpdater) {
         // Avoid sending updates for the items that the client doesn't have.
         // This is important for the performance of e.g. selectAll.
         Set<T> activeItems = updatedItems.stream()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -25,8 +25,8 @@ import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column;
  * create the list of sort orders.
  *
  * @see GridSortOrder
- * @see GridSortOrderBuilder#thenAsc(Column)
- * @see GridSortOrderBuilder#thenDesc(Column)
+ * @see GridSortOrderBuilder#thenAsc(io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column)
+ * @see GridSortOrderBuilder#thenDesc(io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column)
  * @see #build()
  *
  * @author Vaadin Ltd.

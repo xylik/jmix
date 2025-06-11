@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,10 +15,20 @@
  */
 package io.jmix.groupgridflowui.kit.vaadin.grid;
 
-import com.vaadin.flow.component.Component;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import com.vaadin.flow.component.Component;
 
 /**
  * Implements the logic necessary for proper column reordering:
@@ -49,7 +59,7 @@ class GridColumnOrderHelper<T> {
             throw new IllegalArgumentException(
                     "A column is present multiple times in the list of columns: "
                             + columns.stream().map(Grid.Column::getKey)
-                                    .collect(Collectors.joining(", ")));
+                            .collect(Collectors.joining(", ")));
         }
         final List<Grid.Column<T>> currentColumns = grid.getColumns();
         if (newColumns.size() < currentColumns.size()) {
@@ -146,8 +156,8 @@ class GridColumnOrderHelper<T> {
      *             columns apart).
      */
     private void reorderColumnsAndConsumeIDs(Component column,
-            IdQueue unconsumedIDs, GraphNodeLeafCache nodeLeafCache,
-            boolean dryRun) {
+                                             IdQueue unconsumedIDs, GraphNodeLeafCache nodeLeafCache,
+                                             boolean dryRun) {
         Objects.requireNonNull(column);
         if (column instanceof Grid.Column) {
             // special case: we're at the leaf of the column hierarchy.

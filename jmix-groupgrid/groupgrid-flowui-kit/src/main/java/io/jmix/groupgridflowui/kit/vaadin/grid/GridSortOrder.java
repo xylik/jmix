@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,10 +15,11 @@
  */
 package io.jmix.groupgridflowui.kit.vaadin.grid;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Sorting information for {@link Grid}.

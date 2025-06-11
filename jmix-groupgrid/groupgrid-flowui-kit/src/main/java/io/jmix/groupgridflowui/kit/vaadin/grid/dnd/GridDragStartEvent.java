@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -54,7 +54,7 @@ public class GridDragStartEvent<T> extends ComponentEvent<Grid<T>> {
      *            Event details from {@code detail}.
      */
     public GridDragStartEvent(Grid<T> source, boolean fromClient,
-            @EventData("event.detail") JsonObject details) {
+                              @EventData("event.detail") JsonObject details) {
         super(source, fromClient);
         JsonArray items = details.getArray("draggedItems");
 

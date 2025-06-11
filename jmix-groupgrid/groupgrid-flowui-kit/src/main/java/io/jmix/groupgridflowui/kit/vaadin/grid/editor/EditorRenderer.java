@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2024 Vaadin Ltd.
+ * Copyright 2000-2025 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -137,7 +137,7 @@ public class EditorRenderer<T> extends Renderer<T> implements DataGenerator<T> {
 
     @Override
     public Rendering<T> render(Element container, DataKeyMapper<T> keyMapper,
-            String rendererName) {
+                               String rendererName) {
         /*
          * The virtual container is needed as the parent of all editor
          * components. Editor components need a parent in order to have a proper
@@ -161,7 +161,7 @@ public class EditorRenderer<T> extends Renderer<T> implements DataGenerator<T> {
     }
 
     private void setupEditorRenderer(Element container,
-            ExecutionContext context) {
+                                     ExecutionContext context) {
         String appId = context.getUI().getInternals().getAppId();
 
         //@formatter:off
@@ -185,7 +185,7 @@ public class EditorRenderer<T> extends Renderer<T> implements DataGenerator<T> {
     }
 
     private void runBeforeClientResponse(Element container,
-            SerializableConsumer<ExecutionContext> execution) {
+                                         SerializableConsumer<ExecutionContext> execution) {
         container.getNode()
                 .runWhenAttached(ui -> ui.getInternals().getStateTree()
                         .beforeClientResponse(container.getNode(), execution));
