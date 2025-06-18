@@ -1262,7 +1262,8 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
      * Class for managing visible details rows.
      *
      */
-    private class DetailsManager extends AbstractGridExtension<T> {
+    // Haulmont API
+    protected class DetailsManager extends AbstractGridExtension<T> {
 
         private final HashSet<T> detailsVisible = new HashSet<>();
 
@@ -1720,7 +1721,7 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
                 gridDataGenerator, (U) arrayUpdater,
                 this::getUniqueKeyProvider);
 
-        detailsManager = new DetailsManager(this);
+        detailsManager = createDetailsManager(); // Haulmont API
         setPageSize(pageSize);
         setSelectionModel(SelectionMode.SINGLE.createModel(this),
                 SelectionMode.SINGLE);
@@ -4562,7 +4563,8 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
         }
     }
 
-    private void generateSelectableData(T item, JsonObject jsonObject) {
+    // Haulmont API
+    protected void generateSelectableData(T item, JsonObject jsonObject) {
         if (selectableProvider != null) {
             boolean selectable = selectableProvider.test(item);
             jsonObject.put("selectable", selectable);
@@ -5410,5 +5412,10 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
         } else {
             SlotUtils.clearSlot(this, EMPTY_STATE_SLOT);
         }
+    }
+
+    // Haulmont API
+    protected DetailsManager createDetailsManager() {
+        return new DetailsManager(this);
     }
 }

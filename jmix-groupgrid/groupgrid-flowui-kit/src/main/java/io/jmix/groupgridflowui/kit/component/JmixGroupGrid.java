@@ -18,10 +18,9 @@ package io.jmix.groupgridflowui.kit.component;
 
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.internal.AllowInert;
-import com.vaadin.flow.data.provider.ArrayUpdater;
 import com.vaadin.flow.data.provider.CompositeDataGenerator;
 import com.vaadin.flow.data.provider.DataCommunicator;
-import com.vaadin.flow.data.provider.hierarchy.HierarchicalArrayUpdater;
+import com.vaadin.flow.data.provider.hierarchy.HierarchicalArrayUpdater.HierarchicalUpdate;
 import com.vaadin.flow.dom.DisabledUpdateMode;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.*;
@@ -49,7 +48,7 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
     protected JmixGroupGridActionsSupport<JmixGroupGrid<T>, T> actionsSupport;
 
     public JmixGroupGrid() {
-        super(50, JmixGroupDataGridUpdateQueue::new, new JmixGroupDataGridDataCommunicatorBuilder<>());
+        super(50, JmixGroupGridUpdateQueue::new, new JmixGroupGridDataCommunicatorBuilder<>());
 
         setUniqueKeyProperty("key");
         getArrayUpdater().getUpdateQueueData()
@@ -92,6 +91,7 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
     }
 
     // TODO: rp
+
     /**
      * See {@link TreeGrid} and {@code addItemHasChildrenPathGenerator()}.
      */
@@ -108,12 +108,12 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         return (JmixGroupGridDataCommunicator<T>) super.getDataCommunicator();
     }
 
-    protected void doExpand(Collection<T> items, boolean userOriginated) {
+    protected void expand(Collection<T> items, boolean userOriginated) {
         Collection<T> collapsedItems = getDataCommunicator().expand(items);
         // TODO: rp Fire event
     }
 
-    protected void doCollapse(Collection<T> items, boolean userOriginated) {
+    protected void collapse(Collection<T> items, boolean userOriginated) {
         Collection<T> collapsedItems = getDataCommunicator().collapse(items);
         // TODO: rp Fire event
     }
@@ -125,7 +125,21 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
     @Override
     protected GridArrayUpdater createDefaultArrayUpdater(
             SerializableBiFunction<UpdateQueueData, Integer, UpdateQueue> updateQueueFactory) {
-        return new GroupDataGridArrayUpdaterImpl(updateQueueFactory);
+        return new JmixGroupGridArrayUpdaterImpl(updateQueueFactory);
+    }
+
+    @Override
+    protected void generateSelectableData(T item, JsonObject jsonObject) {
+        if (getDataCommunicator().hasChildren(item)) {
+            jsonObject.put("selectable", false);
+        } else {
+            super.generateSelectableData(item, jsonObject);
+        }
+    }
+
+    @Override
+    protected Grid<T>.DetailsManager createDetailsManager() {
+        return new JmixDetailsManager(this);
     }
 
     @AllowInert
@@ -153,9 +167,9 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         T item = getDataCommunicator().getKeyMapper().get(key);
         if (item != null) {
             if (expanded) {
-                doExpand(List.of(item), true);
+                expand(List.of(item), true);
             } else {
-                doCollapse(List.of(item), true);
+                collapse(List.of(item), true);
             }
         }
     }
@@ -166,8 +180,8 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         getDataCommunicator().confirmUpdate(id, parentKey);
     }
 
-    protected static class JmixGroupDataGridDataCommunicatorBuilder<E>
-            extends JmixDataCommunicatorBuilder<E, TreeGridArrayUpdater> {
+    protected static class JmixGroupGridDataCommunicatorBuilder<E>
+            extends DataCommunicatorBuilder<E, TreeGridArrayUpdater> {
 
         @Override
         protected DataCommunicator<E> build(Element element,
@@ -183,12 +197,12 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         }
     }
 
-    protected static class JmixGroupDataGridUpdateQueue extends JmixUpdateQueue
-            implements HierarchicalArrayUpdater.HierarchicalUpdate {
+    protected static class JmixGroupGridUpdateQueue extends UpdateQueue
+            implements HierarchicalUpdate {
 
         private SerializableConsumer<List<JsonValue>> arrayUpdateListener;
 
-        private JmixGroupDataGridUpdateQueue(UpdateQueueData data, int size) {
+        private JmixGroupGridUpdateQueue(UpdateQueueData data, int size) {
             super(data, size);
         }
 
@@ -236,7 +250,7 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         }
     }
 
-    private class GroupDataGridArrayUpdaterImpl implements TreeGridArrayUpdater {
+    private class JmixGroupGridArrayUpdaterImpl implements TreeGridArrayUpdater {
         // Approximated size of the viewport. Used for eager fetching.
         private static final int EAGER_FETCH_VIEWPORT_SIZE_ESTIMATE = 40;
 
@@ -246,14 +260,14 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         private final List<JsonValue> queuedParents = new ArrayList<>();
         private transient VaadinRequest previousRequest;
 
-        public GroupDataGridArrayUpdaterImpl(
+        public JmixGroupGridArrayUpdaterImpl(
                 SerializableBiFunction<UpdateQueueData, Integer, UpdateQueue> updateQueueFactory) {
             this.updateQueueFactory = updateQueueFactory;
         }
 
         @Override
-        public JmixGroupDataGridUpdateQueue startUpdate(int sizeChange) {
-            JmixGroupDataGridUpdateQueue queue = (JmixGroupDataGridUpdateQueue) updateQueueFactory.apply(data, sizeChange);
+        public JmixGroupGridUpdateQueue startUpdate(int sizeChange) {
+            JmixGroupGridUpdateQueue queue = (JmixGroupGridUpdateQueue) updateQueueFactory.apply(data, sizeChange);
 
             if (VaadinRequest.getCurrent() != null
                     && !VaadinRequest.getCurrent().equals(previousRequest)) {
@@ -314,15 +328,20 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
         }
     }
 
+    protected class JmixDetailsManager extends DetailsManager {
 
-    public static abstract class JmixDataCommunicatorBuilder<T, U extends ArrayUpdater>
-            extends DataCommunicatorBuilder<T, U> {
-    }
+        public JmixDetailsManager(Grid<T> grid) {
+            super(grid);
+        }
 
-    public static abstract class JmixUpdateQueue extends UpdateQueue {
+        @Override
+        public void generateData(T item, JsonObject jsonObject) {
+            if (getDataCommunicator().hasChildren(item)) {
+                // Do not generate details for group items
+                return;
+            }
 
-        public JmixUpdateQueue(UpdateQueueData data, int size) {
-            super(data, size);
+            super.generateData(item, jsonObject);
         }
     }
 }

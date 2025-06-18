@@ -84,6 +84,8 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     protected void initComponent() {
         gridDelegate = createDelegate();
         gridDelegate.setAfterColumnSecurityApplyHandler(this::onAfterApplyColumnSecurity);
+        gridDelegate.setEmptyStateTextDelegate(super::setEmptyStateText);
+        gridDelegate.setEmptyStateComponentDelegate(super::setEmptyStateComponent);
     }
 
     @Nullable
@@ -292,9 +294,9 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
                 }).withFunction("onClick", item -> {
                     if (getDataCommunicator().hasChildren(item)) {
                         if (getDataCommunicator().isExpanded(item)) {
-                            doCollapse(List.of(item), true);
+                            collapse(List.of(item), true);
                         } else {
-                            doExpand(List.of(item), true);
+                            expand(List.of(item), true);
                         }
                     }
                 }));
@@ -489,6 +491,28 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     }
 
+    @Nullable
+    @Override
+    public String getEmptyStateText() {
+        return gridDelegate.getEmptyStateText();
+    }
+
+    @Override
+    public void setEmptyStateText(String emptyStateText) {
+        gridDelegate.setEmptyStateText(emptyStateText);
+    }
+
+    @Nullable
+    @Override
+    public Component getEmptyStateComponent() {
+        return gridDelegate.getEmptyStateComponent();
+    }
+
+    @Override
+    public void setEmptyStateComponent(Component emptyStateComponent) {
+        gridDelegate.setEmptyStateComponent(emptyStateComponent);
+    }
+
     @SuppressWarnings("unchecked")
     protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> createDelegate() {
         return applicationContext.getBean(GroupGridDelegate.class, this);
@@ -502,6 +526,10 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         if (!context.isPropertyEnabled()) {
             // Remove column from component while GridDelegate stores this column
             super.removeColumn(context.getColumn());
+
+            // TODO: pinyazhin, aggregation
+            // Remove column from aggregation mechanism
+//            gridDelegate.removeAggregationInfo(context.getColumn());
         }
     }
 }

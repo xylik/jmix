@@ -42,6 +42,7 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     protected final Metadata metadata;
     protected final GroupDataGridItems<T> dataGridItems;
 
+    // TODO: pinyazhin, for now, no reasons to separate maps
     protected BiMap<T, GroupInfo> childGroupRows = HashBiMap.create();
     protected BiMap<T, GroupInfo> rootGroupRows = HashBiMap.create();
 
