@@ -213,6 +213,10 @@ public class ReportDetailView extends StandardDetailView<Report> {
     @Autowired
     protected PolicyStore policyStore;
     @Autowired
+    protected UiProperties uiProperties;
+    @Autowired
+    protected CoreProperties coreProperties;
+    @Autowired
     protected EntityStates entityStates;
     @Autowired
     protected DataSetFactory dataSetFactory;

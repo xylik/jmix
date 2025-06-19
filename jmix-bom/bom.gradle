@@ -67,7 +67,7 @@ javaPlatform {
 }
 
 dependencies {
-    api platform("org.springframework.boot:spring-boot-dependencies:3.4.4")
+    api platform("org.springframework.boot:spring-boot-dependencies:3.5.0")
     api platform('software.amazon.awssdk:bom:2.25.60')
 
     def freeVersion = version
@@ -171,6 +171,8 @@ dependencies {
         api "io.jmix.localfs:jmix-localfs:$freeVersion"
         api "io.jmix.localfs:jmix-localfs-starter:$freeVersion"
 
+        api "io.jmix.masquerade:jmix-masquerade:$freeVersion"
+
         api "io.jmix.messagetemplates:jmix-messagetemplates:$freeVersion"
         api "io.jmix.messagetemplates:jmix-messagetemplates-starter:$freeVersion"
         api "io.jmix.messagetemplates:jmix-messagetemplates-flowui-kit:$freeVersion"
@@ -254,9 +256,6 @@ dependencies {
         api "io.jmix.superset:jmix-superset-flowui-kit:$freeVersion"
         api "io.jmix.superset:jmix-superset-flowui-starter:$freeVersion"
 
-        api "io.jmix.tabbedmode:jmix-tabbedmode-flowui:$freeVersion"
-        api "io.jmix.tabbedmode:jmix-tabbedmode-flowui-starter:$freeVersion"
-
         api "io.jmix.templates.studio:jmix-studio-templates:$freeVersion"
 
         api "io.jmix.translations:jmix-translations-fr:$freeVersion"
@@ -272,6 +271,10 @@ dependencies {
         api "io.jmix.translations:jmix-translations-tr:$freeVersion"
         api "io.jmix.translations:jmix-translations-es:$freeVersion"
         api "io.jmix.translations:jmix-translations-pt-br:$freeVersion"
+
+        api "io.jmix.tabbedmode:jmix-tabbedmode-flowui:$premiumVersion"
+        api "io.jmix.tabbedmode:jmix-tabbedmode-flowui-starter:$premiumVersion"
+        api "io.jmix.tabbedmode:jmix-tabbedmode-test-assist:$premiumVersion"
 
         api "io.jmix.uiconstraints:jmix-uiconstraints:$premiumVersion"
         api "io.jmix.uiconstraints:jmix-uiconstraints-starter:$premiumVersion"
@@ -296,8 +299,8 @@ dependencies {
 
 //        api 'org.eclipse.persistence:jakarta.persistence:2.2.3'
 
-        def eclipselinkOriginalVersion = '4.0.2'
-        def eclipselinkVersion = '4.0.2-3-jmix'
+        def eclipselinkOriginalVersion = '4.0.6'
+        def eclipselinkVersion = '4.0.6-2-jmix'
         api "org.eclipse.persistence:org.eclipse.persistence.core:$eclipselinkVersion"
         api "org.eclipse.persistence:org.eclipse.persistence.jpa:$eclipselinkVersion"
         api "org.eclipse.persistence:org.eclipse.persistence.extension:$eclipselinkOriginalVersion"
@@ -320,6 +323,8 @@ dependencies {
         api 'io.swagger.core.v3:swagger-models-jakarta:2.2.17'
         api 'io.swagger.core.v3:swagger-core-jakarta:2.2.17'
 
+        api 'com.codeborne:selenide:7.9.1'
+
         api 'com.icegreen:greenmail:2.0.0'
 
         api 'javax.media.jai:com.springsource.javax.media.jai.core:1.1.3'
@@ -330,16 +335,10 @@ dependencies {
 
         api 'org.apache.httpcomponents:httpclient:4.5.14'
 
-        api 'commons-logging:commons-logging:1.2'
-
         def openOfficeVersion = '4.1.2'
         api "org.openoffice:juh:$openOfficeVersion"
         api "org.openoffice:ridl:$openOfficeVersion"
         api "org.openoffice:unoil:$openOfficeVersion"
-
-        def avalonVersion = '4.3.1'
-        api "org.apache.avalon.framework:avalon-framework-api:$avalonVersion"
-        api "org.apache.avalon.framework:avalon-framework-impl:$avalonVersion"
 
         def xmlgraphicsVersion = '2.10'
         api "org.apache.xmlgraphics:fop:$xmlgraphicsVersion"
@@ -363,7 +362,7 @@ dependencies {
 
         api 'com.github.librepdf:openpdf:1.3.39'
 
-        def poiVersion = '5.2.3'
+        def poiVersion = '5.4.1'
         api "org.apache.poi:poi:$poiVersion"
         api "org.apache.poi:poi-ooxml:$poiVersion"
         api "org.apache.poi:poi-scratchpad:$poiVersion"
@@ -383,7 +382,6 @@ dependencies {
 
         api 'org.jsoup:jsoup:1.16.1'
         api 'com.opencsv:opencsv:5.7.1'
-        api 'org.olap4j:olap4j:1.2.0'
 
         def jasperVersion = '6.20.6'
         api "net.sf.jasperreports:jasperreports:$jasperVersion"
@@ -400,11 +398,9 @@ dependencies {
         api "org.flowable:flowable-spring-boot-starter-process-rest:$flowableVersion"
         api "org.flowable:flowable-spring-boot-starter-dmn-rest:$flowableVersion"
 
-        //todo SB3 upgrade graphql dependencies to the latest version
+        // deprecated
         api 'io.leangen.graphql:graphql-spqr-spring-boot-starter:0.0.6'
         api 'com.graphql-java-kickstart:graphql-java-servlet:11.1.0'
-
-        //todo remove strict version after jmix-graphql is reworked
         api('com.graphql-java:graphql-java') {
             version {
                 strictly '16.2'

@@ -33,7 +33,6 @@ import io.jmix.flowui.component.select.JmixSelect;
 import io.jmix.flowui.component.textfield.TypedTextField;
 import io.jmix.flowui.download.ByteArrayDownloadDataProvider;
 import io.jmix.flowui.download.DownloadFormat;
-import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.model.CollectionContainer;
 import io.jmix.flowui.model.CollectionLoader;
@@ -45,6 +44,7 @@ import io.jmix.reports.util.ReportsUtils;
 import io.jmix.reportsflowui.ReportsClientProperties;
 import io.jmix.reportsflowui.helper.GridSortHelper;
 import io.jmix.reportsflowui.helper.OutputTypeHelper;
+import io.jmix.reportsflowui.download.ReportDownloader;
 import io.jmix.reportsflowui.runner.FluentUiReportRunner;
 import io.jmix.reportsflowui.runner.ParametersDialogShowMode;
 import io.jmix.reportsflowui.runner.UiReportRunner;
@@ -96,7 +96,7 @@ public class ReportListView extends StandardListView<Report> {
     @ViewComponent
     protected MessageBundle messageBundle;
     @Autowired
-    protected Downloader downloader;
+    protected ReportDownloader downloader;
     @Autowired
     protected ReportImportExport reportImportExport;
     @Autowired

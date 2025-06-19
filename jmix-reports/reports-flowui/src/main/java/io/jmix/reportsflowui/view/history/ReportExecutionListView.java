@@ -23,12 +23,12 @@ import com.vaadin.flow.router.Route;
 import io.jmix.core.FileRef;
 import io.jmix.core.MetadataTools;
 import io.jmix.flowui.component.grid.DataGrid;
-import io.jmix.flowui.download.Downloader;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.model.CollectionLoader;
 import io.jmix.flowui.view.*;
 import io.jmix.reports.entity.Report;
 import io.jmix.reports.entity.ReportExecution;
+import io.jmix.reportsflowui.download.ReportDownloader;
 import io.jmix.reports.entity.ReportSource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +55,7 @@ public class ReportExecutionListView extends StandardListView<ReportExecution> {
     @ViewComponent
     protected MessageBundle messageBundle;
     @Autowired
-    protected Downloader downloader;
+    protected ReportDownloader downloader;
     @Autowired
     protected SecondsToTextFormatter durationFormatter;
     @Autowired
