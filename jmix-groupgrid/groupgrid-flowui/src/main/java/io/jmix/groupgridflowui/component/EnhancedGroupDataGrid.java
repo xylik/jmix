@@ -17,15 +17,17 @@
 package io.jmix.groupgridflowui.component;
 
 import io.jmix.core.metamodel.model.MetaPropertyPath;
+import io.jmix.flowui.component.AggregationInfo;
 import io.jmix.groupgridflowui.kit.component.JmixGroupGridContextMenu;
-import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column;
+import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
 import org.springframework.lang.Nullable;
+
+import java.util.Map;
 
 public interface EnhancedGroupDataGrid<T> {
 
-
     @Nullable
-    MetaPropertyPath getColumnMetaPropertyPath(Column<T> column);
+    MetaPropertyPath getColumnMetaPropertyPath(Grid.Column<T> column);
 
     /**
      * @param metaPropertyPath {@link MetaPropertyPath} that refers to the column
@@ -43,26 +45,26 @@ public interface EnhancedGroupDataGrid<T> {
     /**
      * @return true if DataGrid is aggregatable
      */
-    /*boolean isAggregatable();*/ // TODO: pinyazhin, aggregation
+    boolean isAggregatable();
 
     /**
      * Set to true if aggregation should be enabled. Default value is false.
      *
      * @param aggregatable whether to aggregate DataGrid columns
      */
-    /*void setAggregatable(boolean aggregatable);*/ // TODO: pinyazhin, aggregation
+    void setAggregatable(boolean aggregatable);
 
     /**
      * @return return aggregation row position
      */
-    /*AggregationPosition getAggregationPosition();*/ // TODO: pinyazhin, aggregation
+    AggregationPosition getAggregationPosition();
 
     /**
      * Sets aggregation row position. Default value is {@link AggregationPosition#BOTTOM}.
      *
      * @param position position: {@link AggregationPosition#TOP} or {@link AggregationPosition#BOTTOM}
      */
-    /*void setAggregationPosition(AggregationPosition position);*/ // TODO: pinyazhin, aggregation
+    void setAggregationPosition(AggregationPosition position);
 
     /**
      * Add an aggregation info in order to perform aggregation for column.
@@ -71,12 +73,12 @@ public interface EnhancedGroupDataGrid<T> {
      * @param info   aggregation info
      * @see GroupDataGrid#setAggregatable(boolean)
      */
-    /*void addAggregation(Column<T> column, AggregationInfo info);*/ // TODO: pinyazhin, aggregation
+    void addAggregation(Grid.Column<T> column, AggregationInfo info);
 
     /**
      * @return aggregated values for columns
      */
-    /*Map<Column<T>, Object> getAggregationResults();*/ // TODO: pinyazhin, aggregation
+    Map<Grid.Column<T>, Object> getAggregationResults();
 
     /**
      * @return context menu instance attached to the grid
@@ -86,8 +88,8 @@ public interface EnhancedGroupDataGrid<T> {
     /**
      * Defines the position of aggregation row.
      */
-/*    enum AggregationPosition { // TODO: pinyazhin, aggregation
+    enum AggregationPosition {
         TOP,
         BOTTOM
-    }*/
+    }
 }

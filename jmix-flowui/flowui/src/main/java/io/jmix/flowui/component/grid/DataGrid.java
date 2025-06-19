@@ -212,7 +212,7 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     /**
      * Adds column by the meta property path.
      *
-     * @param metaPropertyPath meta property path to add column
+     * @param metaPropertyPath meta property path to add a column
      * @return added column
      */
     @Override
@@ -224,11 +224,11 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
     }
 
     /**
-     * Adds column by the meta property path and specified key. The key is used to identify the column, see
+     * Adds a column by the meta property path and specified key. The key is used to identify the column, see
      * {@link #getColumnByKey(String)}.
      *
      * @param key              column key
-     * @param metaPropertyPath meta property path to add column
+     * @param metaPropertyPath meta property path to add a column
      * @return added column
      */
     @Override
@@ -385,10 +385,10 @@ public class DataGrid<E> extends JmixGrid<E> implements ListDataComponent<E>, Mu
 
     protected void onAfterApplyColumnSecurity(AbstractGridDelegate.ColumnSecurityContext<E> context) {
         if (!context.isPropertyEnabled()) {
-            // Remove column from component while GridDelegate stores this column
+            // Remove a column from a component while GridDelegate stores this column
             super.removeColumn(context.getColumn());
 
-            // Remove column from aggregation mechanism
+            // Remove column from an aggregation mechanism
             gridDelegate.removeAggregationInfo(context.getColumn());
         }
     }

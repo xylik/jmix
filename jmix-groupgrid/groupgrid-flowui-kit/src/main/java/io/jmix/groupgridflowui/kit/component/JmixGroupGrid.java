@@ -17,6 +17,7 @@
 package io.jmix.groupgridflowui.kit.component;
 
 import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.internal.AllowInert;
 import com.vaadin.flow.data.provider.CompositeDataGenerator;
 import com.vaadin.flow.data.provider.DataCommunicator;
@@ -26,14 +27,14 @@ import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.function.*;
 import com.vaadin.flow.internal.JsonUtils;
 import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.shared.Registration;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import elemental.json.JsonValue;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.HasActions;
 import io.jmix.flowui.kit.component.SelectionChangeNotifier;
-import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
-import io.jmix.groupgridflowui.kit.vaadin.grid.GridArrayUpdater;
+import io.jmix.groupgridflowui.kit.vaadin.grid.*;
 import io.jmix.groupgridflowui.kit.vaadin.grid.GridArrayUpdater.UpdateQueueData;
 import io.jmix.groupgridflowui.kit.vaadin.treegrid.TreeGrid;
 import io.jmix.groupgridflowui.kit.vaadin.treegrid.TreeGridArrayUpdater;
@@ -91,7 +92,6 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
     }
 
     // TODO: rp
-
     /**
      * See {@link TreeGrid} and {@code addItemHasChildrenPathGenerator()}.
      */
@@ -106,6 +106,28 @@ public class JmixGroupGrid<T> extends Grid<T> implements SelectionChangeNotifier
     @Override
     public JmixGroupGridDataCommunicator<T> getDataCommunicator() {
         return (JmixGroupGridDataCommunicator<T>) super.getDataCommunicator();
+    }
+
+    @Override
+    public Registration addItemClickListener(ComponentEventListener<ItemClickEvent<T>> listener) {
+        ComponentEventListener<ItemClickEvent<T>> wrapper = (e) -> {
+            // Do not fire event for group items
+            if (!getDataCommunicator().hasChildren(e.getItem())) {
+                listener.onComponentEvent(e);
+            }
+        };
+        return super.addItemClickListener(wrapper);
+    }
+
+    @Override
+    public Registration addItemDoubleClickListener(ComponentEventListener<ItemDoubleClickEvent<T>> listener) {
+        ComponentEventListener<ItemDoubleClickEvent<T>> wrapper = (e) -> {
+            // Do not fire event for group items
+            if (!getDataCommunicator().hasChildren(e.getItem())) {
+                listener.onComponentEvent(e);
+            }
+        };
+        return super.addItemDoubleClickListener(wrapper);
     }
 
     protected void expand(Collection<T> items, boolean userOriginated) {

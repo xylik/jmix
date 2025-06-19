@@ -34,6 +34,7 @@ import io.jmix.core.MessageTools;
 import io.jmix.core.MetadataTools;
 import io.jmix.core.accesscontext.EntityAttributeContext;
 import io.jmix.core.common.util.Preconditions;
+import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaProperty;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
@@ -43,13 +44,12 @@ import io.jmix.flowui.action.list.ReadAction;
 import io.jmix.flowui.app.datagrid.DataGridEmptyStateByPermissionsFragment;
 import io.jmix.flowui.component.*;
 import io.jmix.flowui.component.delegate.AbstractComponentDelegate;
-import io.jmix.flowui.component.grid.editor.DataGridEditorImpl;
 import io.jmix.flowui.data.BindingState;
 import io.jmix.flowui.data.EntityDataUnit;
+import io.jmix.flowui.data.aggregation.Aggregation;
 import io.jmix.flowui.data.aggregation.Aggregations;
 import io.jmix.flowui.data.aggregation.impl.AggregatableDelegate;
 import io.jmix.flowui.data.grid.DataGridItems;
-import io.jmix.flowui.data.provider.StringPresentationValueProvider;
 import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.HasActions;
 import io.jmix.flowui.kit.component.KeyCombination;
@@ -58,6 +58,8 @@ import io.jmix.groupgridflowui.component.editor.DataGridEditor;
 import io.jmix.groupgridflowui.component.DataGridColumn;
 import io.jmix.groupgridflowui.component.EnhancedGroupDataGrid;
 import io.jmix.groupgridflowui.component.GroupDataGridDataProviderChangeObserver;
+import io.jmix.groupgridflowui.data.HierarchicalGroupDataGridItems;
+import io.jmix.groupgridflowui.data.provider.GroupDataGridStringPresentationValueProvider;
 import io.jmix.groupgridflowui.kit.vaadin.grid.*;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.SelectionMode;
@@ -75,7 +77,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComponent<E> & EnhancedGroupDataGrid<E>
-        & HasActions, E, ITEMS extends DataGridItems<E>> extends AbstractComponentDelegate<C>
+        & HasActions, E, ITEMS extends HierarchicalGroupDataGridItems<E>> extends AbstractComponentDelegate<C>
         implements ApplicationContextAware, InitializingBean {
 
     protected ApplicationContext applicationContext;
@@ -108,8 +110,8 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
     protected Consumer<Component> componentEmptyStateComponentDelegate;
     protected Registration emptyStateByPermissionRegistration;
 
-    /*protected boolean aggregatable;*/ // TODO: pinyazhin, aggregation
-    /*protected EnhancedGroupDataGrid.AggregationPosition aggregationPosition = EnhancedDataGrid.AggregationPosition.BOTTOM;*/ // TODO: pinyazhin, aggregation
+    protected boolean aggregatable;
+    protected EnhancedGroupDataGrid.AggregationPosition aggregationPosition = EnhancedGroupDataGrid.AggregationPosition.BOTTOM;
     protected Map<Column<E>, AggregationInfo> aggregationMap = new LinkedHashMap<>();
 
     protected HeaderRow aggregationHeader;
@@ -182,7 +184,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
             this.dataGridItems = dataGridItems;
 
             bind(dataGridItems);
-            /*updateAggregationRow();*/ // TODO: pinyazhin, aggregation
+            updateAggregationRow();
 
             applySecurityToPropertyColumns();
         }
@@ -213,7 +215,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
     protected void itemsItemSetChanged(DataGridItems.ItemSetChangeEvent<E> event) {
         closeEditorIfOpened();
         component.getDataCommunicator().reset();
-        /*updateAggregationRow();*/ // TODO: pinyazhin, aggregation
+        updateAggregationRow();
         //refresh selection because it contains old item instances which may not exist in the container anymore
         refreshSelection(event.getSource().getItems());
     }
@@ -275,7 +277,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         }
 
         component.getDataCommunicator().refresh(event.getItem());
-        /*updateAggregationRow();*/ // TODO: pinyazhin, aggregation
+        updateAggregationRow();
     }
 
     protected boolean itemIsBeingEdited(E item) {
@@ -366,8 +368,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         this.enterPressHandler = handler;
     }
 
-    // TODO: pinyazhin, aggregation
-    /*public boolean isAggregatable() {
+    public boolean isAggregatable() {
         return aggregatable;
     }
 
@@ -495,7 +496,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
                 fillFooterRow(values);
             }
         }
-    }*/
+    }
 
     protected void fillHeaderRow(Map<Column<E>, String> values) {
         for (Map.Entry<Column<E>, String> entry : values.entrySet()) {
@@ -531,15 +532,14 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         }
     }
 
-    // TODO: pinyazhin, aggregation
-    /*protected void updateAggregationRow() {
+    protected void updateAggregationRow() {
         if (isAggregatable()
                 && getItems() != null
                 && MapUtils.isNotEmpty(aggregationMap)) {
             Map<Column<E>, String> results = aggregate();
             fillAggregationRow(results);
         }
-    }*/
+    }
 
     public BiFunction<Renderer<E>, String, Column<E>> getDefaultColumnFactory() {
         return (Renderer<E> renderer, String columnId) -> {
@@ -598,7 +598,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
     }
 
     protected ValueProvider<E, ?> getValueProvider(MetaPropertyPath metaPropertyPath) {
-        return new StringPresentationValueProvider<>(metaPropertyPath, metadataTools);
+        return new GroupDataGridStringPresentationValueProvider<>(metaPropertyPath, metadataTools, () -> dataGridItems);
     }
 
     protected void initColumn(Column<E> column, MetaPropertyPath metaPropertyPath) {
@@ -832,8 +832,8 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
     public void removeColumn(Column<E> column) {
         columns.remove(column);
 
-        propertyColumns.keySet().remove(column);
-        /*removeAggregationInfo(column);*/ // TODO: pinyazhin, aggregation
+        propertyColumns.remove(column);
+        removeAggregationInfo(column);
     }
 
     public boolean isDataGridOwner(Column<E> column) {
@@ -857,8 +857,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         component.setColumnOrder(newColumnOrder);
     }
 
-    // TODO: pinyazhin, aggregation
-    /*@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     protected AggregatableDelegate<Object> getAggregatableDelegate() {
         if (aggregatableDelegate == null) {
             aggregatableDelegate = applicationContext.getBean(AggregatableDelegate.class);
@@ -869,7 +868,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
             aggregatableDelegate.setItemValueProvider(getItems()::getItemValue);
         }
         return aggregatableDelegate;
-    }*/
+    }
 
     @Nullable
     public Consumer<ColumnSecurityContext<E>> getAfterColumnSecurityApplyHandler() {
@@ -882,6 +881,11 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
     }
 
     protected void onItemDoubleClick(ItemDoubleClickEvent<E> itemDoubleClickEvent) {
+        if (dataGridItems.hasChildren(itemDoubleClickEvent.getItem())) {
+            // Do not handle double click for group items.
+            return;
+        }
+
         if (itemDoubleClickListeners.isEmpty()) {
             handleDoubleClickAction(itemDoubleClickEvent.getItem());
         } else {

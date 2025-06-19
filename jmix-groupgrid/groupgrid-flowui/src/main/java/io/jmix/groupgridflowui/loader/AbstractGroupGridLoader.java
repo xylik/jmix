@@ -100,8 +100,8 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         loadEnum(element, NestedNullBehavior.class, "nestedNullBehavior", resultComponent::setNestedNullBehavior);
         loadBoolean(element, "editorBuffered", editorBuffered ->
                 resultComponent.getEditor().setBuffered(editorBuffered));
-        /*loadEnum(element, EnhancedGroupDataGrid.AggregationPosition.class, "aggregationPosition",
-                resultComponent::setAggregationPosition);*/ // TODO: pinyazhin, aggregation
+        loadEnum(element, EnhancedGroupDataGrid.AggregationPosition.class, "aggregationPosition",
+                resultComponent::setAggregationPosition);
         loadEnum(element, ColumnRendering.class, "columnRendering", resultComponent::setColumnRendering);
 
         componentLoader().loadEnabled(resultComponent, element);
@@ -158,7 +158,7 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         // since Vaadin Framework groups columns when appending a header row, it is necessary to
         // load the aggregation after the filters
         // otherwise, when installing a filter, it will be impossible to get actual column from the public API
-        /*loadBoolean(element, "aggregatable", resultComponent::setAggregatable);*/ // TODO: pinyazhin, aggregation
+        loadBoolean(element, "aggregatable", resultComponent::setAggregatable);
     }
 
     protected void loadMultiSort() {
@@ -391,7 +391,7 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         loadColumnResizable(element, column, resizableColumns);
         loadColumnFilterable(element, column);
         loadColumnEditable(element, column, property);
-        /*loadAggregationInfo(element, column);*/ // TODO: pinyahzin, aggregation
+        loadAggregationInfo(element, column);
 
         loadRenderer(element, metaPropertyPath)
                 .ifPresent(column::setRenderer);
@@ -470,28 +470,27 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         }
     }
 
-    // TODO: pinyazhin, aggregation
-    /*@SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void loadAggregationInfo(Element columnElement, DataGridColumn<?> column) {
         Element aggregationElement = columnElement.element("aggregation");
 
         if (aggregationElement != null) {
             AggregationInfo aggregation = new AggregationInfo();
 
-            aggregation.setPropertyPath(resultComponent.getColumnMetaPropertyPath(column));
+            aggregation.setPropertyPath(resultComponent.getColumnMetaPropertyPath((Column) column));
 
             loadEnum(aggregationElement, AggregationInfo.Type.class, "type", aggregation::setType);
             loadResourceString(aggregationElement, "cellTitle", context.getMessageGroup(), aggregation::setCellTitle);
             loadStrategyClassFqn(aggregation, aggregationElement);
             componentLoader().loadFormatter(aggregation, aggregationElement);
 
-            resultComponent.addAggregation(column, aggregation);
+            resultComponent.addAggregation((Column) column, aggregation);
 
             if (aggregation.getType() == null && aggregation.getStrategy() == null) {
                 throw new GuiDevelopmentException("Incorrect aggregation - type or strategyClass is required", context);
             }
         }
-    }*/
+    }
 
     protected void loadStrategyClassFqn(AggregationInfo aggregation, Element element) {
         loadString(element, "strategyClass")

@@ -296,14 +296,14 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
 
     @SuppressWarnings("unchecked")
     protected T createGroupRow(GroupInfo group) {
-        T groupRowItem = (T) metadata.create(group.getProperty().getMetaClass());
-        EntityValues.setValueEx(groupRowItem, group.getProperty(), group.getValue());
-        return groupRowItem;
+        return  (T) metadata.create(group.getProperty().getMetaClass());
     }
 
     protected Stream<T> collectOwnChildren(@Nullable T parent) {
         if (parent == null) {
-            return rootGroupRows.keySet().stream();
+            return rootGroupRows.isEmpty()
+                    ? dataGridItems.getItems().stream()
+                    : rootGroupRows.keySet().stream();
         }
         GroupInfo groupInfo = getGroupByItem(parent);
         if (groupInfo == null) {

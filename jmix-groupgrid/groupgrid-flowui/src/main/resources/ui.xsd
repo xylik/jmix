@@ -87,9 +87,8 @@
                 <xs:attribute name="columnReorderingAllowed" type="xs:boolean"/>
                 <xs:attribute name="nestedNullBehavior" type="layout:gridNestedNullBehaviorEnum"/>
                 <xs:attribute name="columnRendering" type="layout:gridColumnRendering"/>
-                <!--TODO: pinyazhin, aggregation -->
-                <!--<xs:attribute name="aggregatable" type="xs:boolean"/>-->
-                <!--<xs:attribute name="aggregationPosition" type="layout:aggregationPosition"/>-->
+                <xs:attribute name="aggregatable" type="xs:boolean"/>
+                <xs:attribute name="aggregationPosition" type="layout:aggregationPosition"/>
                 <xs:attribute name="multiSort" type="xs:boolean"/>
                 <xs:attribute name="multiSortPriority" type="layout:gridMultiSortPriority"/>
                 <xs:attribute name="multiSortOnShiftClickOnly" type="xs:boolean"/>
@@ -105,8 +104,7 @@
     <!-- Column-->
     <xs:complexType name="groupDataGridColumnComponent">
         <xs:sequence minOccurs="0">
-            <!--TODO: pinyazhin, aggregation -->
-            <!--<xs:element name="aggregation" type="gridAggregationType"/>-->
+            <xs:element name="aggregation" type="layout:gridAggregationType"/>
             <xs:group ref="layout:renderers"/>
             <xs:element name="fragmentRenderer" type="layout:fragmentRendererElement"/>
         </xs:sequence>

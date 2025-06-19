@@ -18,12 +18,18 @@ package io.jmix.groupgridflowui.component;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.data.provider.DataCommunicator;
+import com.vaadin.flow.data.provider.DataGenerator;
+import com.vaadin.flow.data.provider.hierarchy.HierarchicalDataCommunicator;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.shared.Registration;
+import elemental.json.JsonObject;
+import io.jmix.core.annotation.Internal;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.flowui.kit.meta.StudioIgnore;
 import io.jmix.flowui.sys.BeanUtil;
+import io.jmix.groupgridflowui.component.HierarchicalColumnRendererWrapper.HierarchicalDataGeneratorWrapper;
 import io.jmix.groupgridflowui.component.headerfilter.DataGridHeaderFilter;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
 import org.springframework.beans.BeansException;
@@ -120,6 +126,7 @@ public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationCont
 
     /**
      * Add listener for event of column visibility change
+     *
      * @param listener the listener to add
      * @return a registration handle to remove the listener
      */
@@ -129,5 +136,58 @@ public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationCont
 
         //noinspection unchecked,rawtypes
         return addListener(GroupDataGridColumnVisibilityChangedEvent.class, (ComponentEventListener) listener);
+    }
+
+    @Override
+    protected Registration addDataGenerator(DataGenerator<E> dataGenerator) {
+        DataGenerator<E> dataGeneratorWrapper = new DataGeneratorWrapper<E>(dataGenerator);
+        return super.addDataGenerator(dataGeneratorWrapper);
+    }
+
+    /**
+     * The data generator that wraps another one to manage generation data for group items.
+     *
+     * @param <E> type of entity
+     */
+    @Internal
+    protected class DataGeneratorWrapper<E> implements DataGenerator<E> {
+
+        protected final DataGenerator<E> dataGenerator;
+
+        public DataGeneratorWrapper(DataGenerator<E> dataGenerator) {
+            this.dataGenerator = dataGenerator;
+        }
+
+        @Override
+        public void generateData(E item, JsonObject jsonObject) {
+            if (isGroupItem(item) && !(dataGenerator instanceof HierarchicalDataGeneratorWrapper)) {
+                // Skip generating data for group item
+                return;
+            }
+            dataGenerator.generateData(item, jsonObject);
+        }
+
+        @Override
+        public void destroyData(E item) {
+            dataGenerator.destroyData(item);
+        }
+
+        @Override
+        public void destroyAllData() {
+            dataGenerator.destroyAllData();
+        }
+
+        @Override
+        public void refreshData(E item) {
+            dataGenerator.refreshData(item);
+        }
+
+        @SuppressWarnings("unchecked")
+        protected boolean isGroupItem(E item) {
+            DataCommunicator<E> dataCommunicator = (DataCommunicator<E>) grid.getDataCommunicator();
+
+            return dataCommunicator instanceof HierarchicalDataCommunicator<E> hierarchicalDataCommunicator
+                    && hierarchicalDataCommunicator.hasChildren(item);
+        }
     }
 }

@@ -122,11 +122,9 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     @Nullable
     @Override
     public GroupDataGridItems<E> getItems() {
-        GroupDataGridItems<E> dataGridItems = gridDelegate.getItems();
-        if (dataGridItems instanceof HierarchicalGroupDataGridItems<E> hierarchicalGroupDataGridItems) {
-            return hierarchicalGroupDataGridItems.getGroupDataGridItems();
-        }
-        return dataGridItems;
+        HierarchicalGroupDataGridItems<E> dataGridItems = gridDelegate.getItems();
+
+        return dataGridItems == null ? null : dataGridItems.getGroupDataGridItems();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -218,9 +216,9 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     }
 
     /**
-     * Adds column by the meta property path.
+     * Adds a column by the meta property path.
      *
-     * @param metaPropertyPath meta property path to add column
+     * @param metaPropertyPath meta property path to add a column
      * @return added column
      */
     @Override
@@ -232,11 +230,11 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     }
 
     /**
-     * Adds column by the meta property path and specified key. The key is used to identify the column, see
+     * Adds a column by the meta property path and specified key. The key is used to identify the column, see
      * {@link #getColumnByKey(String)}.
      *
      * @param key              column key
-     * @param metaPropertyPath meta property path to add column
+     * @param metaPropertyPath meta property path to add a column
      * @return added column
      */
     @Override
@@ -277,29 +275,31 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     // TODO: pinyazhin, when add a column?
     public Column<E> addHierarchyColumn() {
-        Column<E> column = addColumn(LitRenderer.<E>of(
-                        "<vaadin-grid-tree-toggle @click=${onClick} .leaf=${!item.children} .expanded=${model.expanded} .level=${model.level}>"
-                                + "${item.name}</vaadin-grid-tree-toggle>")
-                .withProperty("children", item -> getDataCommunicator().hasChildren(item))
-                .withProperty("name", item -> {
-                    String name = "";
-                    if (getDataCommunicator().hasChildren(item)) {
-                        HierarchicalGroupDataGridItems<E> items = gridDelegate.getItems();
-                        if (items != null) {
-                            GroupInfo group = items.getGroupByItem(item);
-                            name = metadataTools.format(group.getValue(), group.getProperty().getMetaProperty());
-                        }
-                    }
-                    return name;
-                }).withFunction("onClick", item -> {
-                    if (getDataCommunicator().hasChildren(item)) {
-                        if (getDataCommunicator().isExpanded(item)) {
-                            collapse(List.of(item), true);
-                        } else {
-                            expand(List.of(item), true);
-                        }
-                    }
-                }));
+        Column<E> column = addColumn(new HierarchicalColumnRendererWrapper<>(
+                LitRenderer.<E>of(
+                                "<vaadin-grid-tree-toggle @click=${onClick} .leaf=${!item.children} .expanded=${model.expanded} .level=${model.level}>"
+                                        + "${item.name}</vaadin-grid-tree-toggle>")
+                        .withProperty("children", item -> getDataCommunicator().hasChildren(item))
+                        .withProperty("name", item -> {
+                            String name = "";
+                            if (getDataCommunicator().hasChildren(item)) {
+                                HierarchicalGroupDataGridItems<E> items = gridDelegate.getItems();
+                                if (items != null) {
+                                    GroupInfo group = items.getGroupByItem(item);
+                                    name = metadataTools.format(group.getValue(), group.getProperty().getMetaProperty());
+                                }
+                            }
+                            return name;
+                        }).withFunction("onClick", item -> {
+                            if (getDataCommunicator().hasChildren(item)) {
+                                if (getDataCommunicator().isExpanded(item)) {
+                                    collapse(List.of(item), true);
+                                } else {
+                                    expand(List.of(item), true);
+                                }
+                            }
+                        })
+        ));
 
         // TODO: rp
 /*        final SerializableComparator<T> comparator = (a, b) -> compareMaybeComparables(valueProvider.apply(a),
@@ -314,43 +314,35 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return editorCreated;
     }
 
-    /*@Override
+    @Override
     public boolean isAggregatable() {
-        // // TODO: pinyazhin, aggregation
-        return false;
-        //return gridDelegate.isAggregatable();
-    }*/
+        return gridDelegate.isAggregatable();
+    }
 
-    /*@Override
+    @Override
     public void setAggregatable(boolean aggregatable) {
-        // TODO: pinyazhin, aggregation
-        //gridDelegate.setAggregatable(aggregatable);
-    }*/
+        gridDelegate.setAggregatable(aggregatable);
+    }
 
-    /*@Override
+    @Override
     public AggregationPosition getAggregationPosition() {
-        // TODO: pinyazhin, aggregation
         return gridDelegate.getAggregationPosition();
-    }*/
+    }
 
-    /*@Override
+    @Override
     public void setAggregationPosition(AggregationPosition position) {
-        // TODO: pinyazhin, aggregation
         gridDelegate.setAggregationPosition(position);
-    }*/
+    }
 
-    /*@Override
+    @Override
     public void addAggregation(Column<E> column, AggregationInfo info) {
-        // TODO: pinyazhin, aggregation
-        //gridDelegate.addAggregationInfo(column, info);
-    }*/
+        gridDelegate.addAggregationInfo(column, info);
+    }
 
-    /*@Override
+    @Override
     public Map<Column<E>, Object> getAggregationResults() {
-        // TODO: pinyazhin, aggregation
-        return Collections.emptyMap();
-        //return gridDelegate.getAggregationResults();
-    }*/
+        return gridDelegate.getAggregationResults();
+    }
 
     /**
      * <strong>Note:</strong> If column reordering is enabled with
@@ -524,12 +516,11 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
 
     protected void onAfterApplyColumnSecurity(AbstractGroupGridDelegate.ColumnSecurityContext<E> context) {
         if (!context.isPropertyEnabled()) {
-            // Remove column from component while GridDelegate stores this column
+            // Remove a column from a component while GridDelegate stores this column
             super.removeColumn(context.getColumn());
 
-            // TODO: pinyazhin, aggregation
-            // Remove column from aggregation mechanism
-//            gridDelegate.removeAggregationInfo(context.getColumn());
+            // Remove column from an aggregation mechanism
+            gridDelegate.removeAggregationInfo(context.getColumn());
         }
     }
 }

@@ -503,8 +503,7 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
                     .getDataGenerator();
 
             if (dataGenerator.isPresent()) {
-                columnDataGeneratorRegistration = grid
-                        .addDataGenerator(dataGenerator.get());
+                columnDataGeneratorRegistration = addDataGenerator(dataGenerator.get()); // Haulmont API
             }
         }
 
@@ -559,8 +558,7 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
                     .getDataCommunicator().getKeyMapper());
 
             columnDataGeneratorRegistration = rendering.getDataGenerator()
-                    .map(dataGenerator -> grid
-                            .addDataGenerator((DataGenerator) dataGenerator))
+                    .map(dataGenerator -> addDataGenerator(dataGenerator)) // Haulmont API
                     .orElse(null);
 
             // The editor renderer is a wrapper around the regular renderer, so
@@ -1194,6 +1192,11 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
                 editorDataGeneratorRegistration = grid
                         .addDataGenerator((DataGenerator) dataGenerator.get());
             }
+        }
+
+        // Haulmont API
+        protected Registration addDataGenerator(DataGenerator<T> dataGenerator) {
+            return grid.addDataGenerator((DataGenerator) dataGenerator);
         }
     }
 
