@@ -42,10 +42,9 @@
                         <xs:complexType>
                             <xs:sequence>
                                 <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
-                                <!--TODO: pinyazhin, check inline editor -->
-                                <!--<xs:element name="editorActionsColumn"
-                                            type="layout:dataGridEditorActionsColumn"
-                                            minOccurs="0"/>-->
+                                <xs:element name="editorActionsColumn"
+                                            type="dataGridEditorActionsColumn"
+                                            minOccurs="0"/>
                                 <xs:element name="groupColumn" minOccurs="0">
                                     <xs:complexType>
                                         <xs:sequence>
@@ -80,15 +79,14 @@
                 <xs:attribute name="themeNames" type="layout:gridThemeNames"/>
                 <xs:attribute name="dataContainer" type="xs:string"/>
                 <xs:attribute name="allRowsVisible" type="xs:boolean"/>
-                <!--TODO: pinyazhin, check inline editor -->
-                <!--<xs:attribute name="editorBuffered" type="xs:boolean"/>-->
+                <xs:attribute name="editorBuffered" type="xs:boolean"/>
                 <xs:attribute name="selectionMode" type="layout:gridSelectionMode"/>
                 <xs:attribute name="detailsVisibleOnClick" type="xs:boolean"/>
                 <xs:attribute name="columnReorderingAllowed" type="xs:boolean"/>
                 <xs:attribute name="nestedNullBehavior" type="layout:gridNestedNullBehaviorEnum"/>
                 <xs:attribute name="columnRendering" type="layout:gridColumnRendering"/>
                 <xs:attribute name="aggregatable" type="xs:boolean"/>
-                <xs:attribute name="aggregationPosition" type="layout:aggregationPosition"/>
+                <xs:attribute name="aggregationPosition" type="aggregationPosition"/>
                 <xs:attribute name="multiSort" type="xs:boolean"/>
                 <xs:attribute name="multiSortPriority" type="layout:gridMultiSortPriority"/>
                 <xs:attribute name="multiSortOnShiftClickOnly" type="xs:boolean"/>
@@ -104,7 +102,7 @@
     <!-- Column-->
     <xs:complexType name="groupDataGridColumnComponent">
         <xs:sequence minOccurs="0">
-            <xs:element name="aggregation" type="layout:gridAggregationType"/>
+            <xs:element name="aggregation" type="gridAggregationType"/>
             <xs:group ref="layout:renderers"/>
             <xs:element name="fragmentRenderer" type="layout:fragmentRendererElement"/>
         </xs:sequence>
@@ -122,7 +120,64 @@
         <xs:attribute name="resizable" type="xs:boolean"/>
         <xs:attribute name="autoWidth" type="xs:boolean"/>
         <xs:attribute name="textAlign" type="layout:gridColumnTextAlignEnum"/>
-        <!--TODO: pinyazhin, check inline editor -->
-        <!--<xs:attribute name="editable" type="xs:boolean"/>-->
+        <xs:attribute name="editable" type="xs:boolean"/>
+    </xs:complexType>
+
+    <!--Aggregation-->
+    <xs:complexType name="gridAggregationType">
+        <xs:choice minOccurs="0">
+            <xs:element name="formatter" minOccurs="0" type="layout:formatterType"/>
+        </xs:choice>
+
+        <xs:attribute name="type" type="aggregationType"/>
+        <xs:attribute name="strategyClass" type="xs:string"/>
+        <xs:attribute name="cellTitle" type="layout:resourceString"/>
+    </xs:complexType>
+
+    <xs:simpleType name="aggregationType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SUM"/>
+            <xs:enumeration value="COUNT"/>
+            <xs:enumeration value="AVG"/>
+            <xs:enumeration value="MIN"/>
+            <xs:enumeration value="MAX"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="aggregationPosition">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TOP"/>
+            <xs:enumeration value="BOTTOM"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!--Grid.EditorActionsColumn-->
+    <xs:complexType name="dataGridEditorActionsColumn">
+        <xs:sequence>
+            <xs:element name="editButton" type="gridEditorButtonType"/>
+            <xs:element name="saveButton" minOccurs="0" type="gridEditorButtonType"/>
+            <xs:element name="closeButton" minOccurs="0" type="gridEditorButtonType"/>
+            <xs:element name="cancelButton" minOccurs="0" type="gridEditorButtonType"/>
+        </xs:sequence>
+
+        <xs:attribute name="key" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="autoWidth" type="xs:boolean"/>
+        <xs:attribute name="resizable" type="xs:boolean"/>
+        <xs:attribute name="flexGrow" type="xs:integer"/>
+        <xs:attribute name="header" type="layout:resourceString"/>
+        <xs:attribute name="footer" type="layout:resourceString"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="gridEditorButtonType">
+        <xs:attributeGroup ref="layout:hasText"/>
+        <xs:attributeGroup ref="layout:hasIcon"/>
+        <xs:attributeGroup ref="layout:hasTitle"/>
+        <xs:attributeGroup ref="layout:hasClassNames"/>
+        <xs:attributeGroup ref="layout:hasShortcutCombination"/>
+
+        <xs:attribute name="themeNames" type="layout:buttonThemeNames"/>
+        <xs:attribute name="iconAfterText" type="xs:boolean"/>
     </xs:complexType>
 </xs:schema>

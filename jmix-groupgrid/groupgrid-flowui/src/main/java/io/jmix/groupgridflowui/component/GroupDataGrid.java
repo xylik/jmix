@@ -416,7 +416,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     @Override
     protected DataGridEditor<E> createEditor() {
         editorCreated = true;
-        return new DataGridEditorImpl<>(this, applicationContext);
+        return gridDelegate.createEditor();
     }
 
     @SuppressWarnings({"unchecked"})

@@ -58,12 +58,14 @@ import io.jmix.groupgridflowui.component.editor.DataGridEditor;
 import io.jmix.groupgridflowui.component.DataGridColumn;
 import io.jmix.groupgridflowui.component.EnhancedGroupDataGrid;
 import io.jmix.groupgridflowui.component.GroupDataGridDataProviderChangeObserver;
+import io.jmix.groupgridflowui.component.editor.DataGridEditorImpl;
 import io.jmix.groupgridflowui.data.HierarchicalGroupDataGridItems;
 import io.jmix.groupgridflowui.data.provider.GroupDataGridStringPresentationValueProvider;
 import io.jmix.groupgridflowui.kit.vaadin.grid.*;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.Column;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid.SelectionMode;
 import io.jmix.groupgridflowui.kit.vaadin.grid.editor.Editor;
+import io.jmix.groupgridflowui.kit.vaadin.grid.editor.EditorCloseEvent;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -880,6 +882,12 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         this.afterColumnSecurityApplyHandler = afterColumnSecurityApplyHandler;
     }
 
+    public DataGridEditorImpl<E> createEditor() {
+        DataGridEditorImpl<E> editor = new DataGridEditorImpl<>(component, applicationContext);
+        editor.addCloseListener(this::onGridEditorClose);
+        return editor;
+    }
+
     protected void onItemDoubleClick(ItemDoubleClickEvent<E> itemDoubleClickEvent) {
         if (dataGridItems.hasChildren(itemDoubleClickEvent.getItem())) {
             // Do not handle double click for group items.
@@ -948,16 +956,9 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         return null;
     }
 
-    // TODO: pinyazhin, check inline editor
-    /*public DataGridEditorImpl<E> createEditor() {
-        DataGridEditorImpl<E> editor = new DataGridEditorImpl<>(component, applicationContext);
-        editor.addCloseListener(this::onGridEditorClose);
-        return editor;
-    }
-
     protected void onGridEditorClose(EditorCloseEvent<E> eEditorCloseEvent) {
         updateAggregationRow();
-    }*/
+    }
 
     public static class ColumnSecurityContext<E> {
 
