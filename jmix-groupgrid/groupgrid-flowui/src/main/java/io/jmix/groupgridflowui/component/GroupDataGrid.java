@@ -272,6 +272,30 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return (DataGridColumn<E>) super.addColumn(propertyName);
     }
 
+    public void groupBy(MetaPropertyPath... properties) {
+        gridDelegate.groupBy(properties);
+    }
+
+    public void groupBy(Column<E>... columns) {
+        gridDelegate.groupBy(columns);
+    }
+
+    public void groupBy(String... keys) {
+        gridDelegate.groupBy(keys);
+    }
+
+    public void ungroup() {
+        gridDelegate.ungroup();
+    }
+
+    public void ungroupBy(Column<E>... columns) {
+        gridDelegate.ungroupBy(columns);
+    }
+
+    public void ungroupBy(String... keys) {
+        gridDelegate.ungroupBy(keys);
+    }
+
     // TODO: pinyazhin, when add a column?
     public Column<E> addHierarchyColumn() {
         Column<E> column = addColumn(new HierarchicalColumnRendererWrapper<>(
@@ -285,7 +309,14 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
                                 HierarchicalGroupDataGridItems<E> items = gridDelegate.getItems();
                                 if (items != null) {
                                     GroupInfo group = items.getGroupByItem(item);
-                                    name = metadataTools.format(group.getValue(), group.getProperty().getMetaProperty());
+                                    if (group == null) {
+                                        return "";
+                                    }
+                                    if (group.getProperty().get() instanceof MetaPropertyPath propertyPath) {
+                                        name = metadataTools.format(group.getValue(), propertyPath.getMetaProperty());
+                                    } else if (group.getProperty().get() instanceof String) {
+                                        name = group.getValue().toString();
+                                    }
                                 }
                             }
                             return name;

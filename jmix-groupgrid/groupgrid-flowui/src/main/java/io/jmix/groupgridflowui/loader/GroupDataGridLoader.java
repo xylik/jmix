@@ -77,7 +77,7 @@ public class GroupDataGridLoader extends AbstractGroupGridLoader<GroupDataGrid<?
 
     protected void loadGroupColumns(GroupDataGrid<?> resultComponent, Element groupColumnElement,
                                     MetaClass metaClass, boolean sortableColumns, boolean resizableColumns) {
-        List<MetaPropertyPath> groupProperties = new ArrayList<>();
+        List<Object> groupProperties = new ArrayList<>();
 
         // TODO: pinyazhin, when add a column?
         resultComponent.addHierarchyColumn();
@@ -92,6 +92,7 @@ public class GroupDataGridLoader extends AbstractGroupGridLoader<GroupDataGrid<?
                 continue;
             }
 
+            // Add group property using "property"
             String property = loadString(columnElement, "property")
                     .orElse(null);
             MetaPropertyPath metaPropertyPath = property != null
@@ -100,7 +101,11 @@ public class GroupDataGridLoader extends AbstractGroupGridLoader<GroupDataGrid<?
 
             if (metaPropertyPath != null) {
                 groupProperties.add(metaPropertyPath);
+                continue;
             }
+
+            // Add group property using "key"
+            loadString(columnElement, "key").ifPresent(groupProperties::add);
         }
 
         if (!groupProperties.isEmpty()) {
@@ -110,9 +115,9 @@ public class GroupDataGridLoader extends AbstractGroupGridLoader<GroupDataGrid<?
 
     protected class GroupItemsInitTask implements InitTask {
 
-        protected final List<MetaPropertyPath> groupProperties;
+        protected final List<Object> groupProperties;
 
-        public GroupItemsInitTask(List<MetaPropertyPath> groupProperties) {
+        public GroupItemsInitTask(List<Object> groupProperties) {
             this.groupProperties = groupProperties;
         }
 
@@ -127,7 +132,7 @@ public class GroupDataGridLoader extends AbstractGroupGridLoader<GroupDataGrid<?
 
             GroupDataGridItems<?> items = resultComponent.getItems();
             if (items != null) {
-                items.groupBy(groupProperties.toArray(new MetaPropertyPath[0]));
+                items.groupBy(groupProperties.toArray(new Object[0]));
             }
         }
     }

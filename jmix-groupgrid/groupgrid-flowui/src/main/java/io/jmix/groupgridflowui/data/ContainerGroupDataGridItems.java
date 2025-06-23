@@ -25,17 +25,21 @@ import io.jmix.flowui.model.CollectionContainer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 
 import java.util.*;
 
 public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> implements GroupDataGridItems<T> {
+    private static final Logger log = LoggerFactory.getLogger(ContainerGroupDataGridItems.class);
 
     // todo rp rework API to make it more friendly
-    protected MetaPropertyPath[] groupProperties = null;
+    protected GroupProperty[] groupProperties = null;
 
     protected Map<GroupInfo, GroupInfo> parents;
     protected Map<GroupInfo, Set<GroupInfo>> children;
+    protected Map<Object, GroupPropertyValueProvider<T>> groupPropertyValueProviders;
 
     protected List<GroupInfo> roots;
 
@@ -68,10 +72,12 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Override
-    public void groupBy(MetaPropertyPath[] properties) {
+    public void groupBy(Object[] properties) {
         Preconditions.checkNotNullArgument(properties);
 
-        groupProperties = properties;
+        groupProperties = Arrays.stream(properties)
+                .map(p -> (GroupProperty) () -> p)
+                .toArray(GroupProperty[]::new);
 
         try {
             if (ArrayUtils.isNotEmpty(groupProperties)) {
@@ -112,8 +118,8 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     @Nullable
     protected GroupInfo groupItems(int propertyIndex, @Nullable GroupInfo parent,
                                    Collection<GroupInfo> children,
-                                   T item, LinkedMap<MetaPropertyPath, Object> groupValues) {
-        MetaPropertyPath property = groupProperties[propertyIndex++];
+                                   T item, LinkedMap<GroupProperty, Object> groupValues) {
+        GroupProperty property = groupProperties[propertyIndex++];
         Object itemValue = getValueByProperty(item, property);
         groupValues.put(property, itemValue);
 
@@ -139,10 +145,21 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Nullable
-    protected Object getValueByProperty(T item, MetaPropertyPath property) {
+    protected Object getValueByProperty(T item, GroupProperty property) {
         Preconditions.checkNotNullArgument(item);
 
-        return EntityValues.getValueEx(item, property.toString());
+        if (property.get() instanceof MetaPropertyPath metaPropertyPath) {
+            return EntityValues.getValueEx(item, metaPropertyPath);
+        } else if (property.get() instanceof String generatedProperty) {
+            GroupPropertyValueProvider<T> valueProvider = groupPropertyValueProviders.get(generatedProperty);
+            if (valueProvider != null) {
+                return valueProvider.accept(new GroupPropertyValueProvider.GroupingPropertyContext<>(item, property));
+            } else {
+                log.warn("The group property value provider is not set for '{}' property." +
+                        " Use GroupDataGridItems#addGroupPropertyValueProvider() method", generatedProperty);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -280,7 +297,7 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Override
-    public Collection<MetaPropertyPath> getGroupProperties() {
+    public Collection<GroupProperty> getGroupProperties() {
         if (groupProperties == null) {
             return Collections.emptyList();
         }
@@ -291,6 +308,14 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     @Override
     public boolean containsGroup(GroupInfo groupId) {
         return hasGroups() && parents.containsKey(groupId);
+    }
+
+    @Override
+    public void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
+        if (groupPropertyValueProviders == null) {
+            groupPropertyValueProviders = new HashMap<>();
+        }
+        groupPropertyValueProviders.put(generatedProperty, propertyValueProvider);
     }
 
     protected void refreshGroups() {

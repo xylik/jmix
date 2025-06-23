@@ -16,7 +16,6 @@
 
 package io.jmix.groupgridflowui.data;
 
-import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.data.grid.DataGridItems;
 
 import javax.annotation.Nullable;
@@ -26,9 +25,17 @@ import java.util.List;
 public interface GroupDataGridItems<T> extends DataGridItems<T> {
 
     /**
-     * Perform grouping by the list of properties
+     * Perform grouping by the list of properties. The available values for properties are:
+     * <ul>
+     *     <li>
+     *         MetaPropertyPath can be a property of current or a reference entity.
+     *     </li>
+     *     <li>
+     *         Column key (String) of a generated value.
+     *     </li>
+     * </ul>
      */
-    void groupBy(MetaPropertyPath[] properties);
+    void groupBy(Object[] properties);
 
     /**
      * @return the list of root groups
@@ -84,10 +91,19 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
     /**
      * @return group properties
      */
-    Collection<MetaPropertyPath> getGroupProperties();
+    Collection<GroupProperty> getGroupProperties();
 
     /**
-     * Indicates that a group is contained in the groups tree
+     * Indicates that a group is contained in the group tree
      */
     boolean containsGroup(GroupInfo groupId);
+
+    /**
+     * Adds a value provider for a generated grouping property. This method enables defining
+     * custom logic for computing property values during data grouping.
+     *
+     * @param generatedProperty     name of the generated property to be used for grouping
+     * @param propertyValueProvider implementation of {@link GroupPropertyValueProvider}
+     */
+    void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider);
 }

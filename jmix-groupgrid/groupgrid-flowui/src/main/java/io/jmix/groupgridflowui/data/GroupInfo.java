@@ -15,31 +15,30 @@
  */
 package io.jmix.groupgridflowui.data;
 
-import io.jmix.core.metamodel.model.MetaPropertyPath;
 import org.apache.commons.collections4.map.LinkedMap;
 
 /**
- * Class contains information about current cell value and cell value of parent group columns.
+ * Class contains information about the current cell value and cell value of parent group columns.
  */
 // TODO: rp make interface?
 public class GroupInfo {
 
-    private LinkedMap<MetaPropertyPath, Object> groupingValues;
-    private MetaPropertyPath groupProperty;
+    private LinkedMap<GroupProperty, Object> groupingValues;
+    private GroupProperty groupProperty;
 
-    public GroupInfo(LinkedMap<MetaPropertyPath, Object> groupingValues) {
+    public GroupInfo(LinkedMap<GroupProperty, Object> groupingValues) {
         this.groupingValues = new LinkedMap<>(groupingValues);
         this.groupProperty = groupingValues.get(groupingValues.size() - 1);
     }
 
-    public Object getPropertyValue(MetaPropertyPath propertyPath) {
+    public Object getPropertyValue(GroupProperty propertyPath) {
         if (!groupingValues.containsKey(propertyPath)) {
             throw new IllegalArgumentException();
         }
         return groupingValues.get(propertyPath);
     }
 
-    public MetaPropertyPath getProperty() {
+    public GroupProperty getProperty() {
         return groupProperty;
     }
 

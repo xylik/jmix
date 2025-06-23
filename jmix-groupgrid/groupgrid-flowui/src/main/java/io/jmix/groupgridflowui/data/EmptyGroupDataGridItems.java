@@ -17,7 +17,6 @@
 package io.jmix.groupgridflowui.data;
 
 import io.jmix.core.metamodel.model.MetaClass;
-import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.data.grid.EmptyDataGridItems;
 
 import javax.annotation.Nullable;
@@ -31,7 +30,7 @@ public class EmptyGroupDataGridItems<T> extends EmptyDataGridItems<T> implements
     }
 
     @Override
-    public void groupBy(@Nullable MetaPropertyPath[] properties) {
+    public void groupBy(@Nullable Object[] properties) {
         // Do nothing
     }
 
@@ -87,12 +86,17 @@ public class EmptyGroupDataGridItems<T> extends EmptyDataGridItems<T> implements
     }
 
     @Override
-    public Collection<MetaPropertyPath> getGroupProperties() {
+    public Collection<GroupProperty> getGroupProperties() {
         return List.of();
     }
 
     @Override
     public boolean containsGroup(GroupInfo groupId) {
         return false;
+    }
+
+    @Override
+    public void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
+        // Do nothing.
     }
 }
