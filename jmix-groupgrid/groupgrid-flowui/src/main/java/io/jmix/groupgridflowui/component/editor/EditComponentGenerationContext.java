@@ -26,9 +26,9 @@ import java.util.function.Consumer;
 
 /**
  * Contains information for a function that returns the column editor component
- * used by {@link DataGridEditor}.
+ * used by {@link GroupDataGridEditor}.
  *
- * @param <T> the type of the row/item being edited in {@link DataGridEditor}
+ * @param <T> the type of the row/item being edited in {@link GroupDataGridEditor}
  */
 public class EditComponentGenerationContext<T> {
 
@@ -45,7 +45,7 @@ public class EditComponentGenerationContext<T> {
     }
 
     /**
-     * @return an item being edited in {@link DataGridEditor}
+     * @return an item being edited in {@link GroupDataGridEditor}
      */
     public T getItem() {
         return item;

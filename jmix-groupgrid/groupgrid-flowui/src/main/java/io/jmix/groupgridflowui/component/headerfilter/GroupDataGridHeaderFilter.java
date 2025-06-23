@@ -50,7 +50,7 @@ import org.springframework.lang.Nullable;
  * A UI component used for displaying the filter in the column header. Modifies the standard header by
  * adding a button to open a pop-up overlay with a {@link PropertyFilter}.
  */
-public class DataGridHeaderFilter extends Composite<HorizontalLayout>
+public class GroupDataGridHeaderFilter extends Composite<HorizontalLayout>
         implements ApplicationContextAware, InitializingBean {
 
     public static final String ATTRIBUTE_JMIX_ROLE_NAME = "jmix-role";
@@ -76,7 +76,7 @@ public class DataGridHeaderFilter extends Composite<HorizontalLayout>
     protected Object appliedValue;
     protected PropertyFilter.Operation appliedOperation;
 
-    public DataGridHeaderFilter(HeaderFilterContext context) {
+    public GroupDataGridHeaderFilter(HeaderFilterContext context) {
         this.context = context;
     }
 
@@ -335,11 +335,11 @@ public class DataGridHeaderFilter extends Composite<HorizontalLayout>
     /**
      * An event fires when the current value of the {@link PropertyFilter} is applied to the loader.
      */
-    public static class ApplyEvent extends ComponentEvent<DataGridHeaderFilter> {
+    public static class ApplyEvent extends ComponentEvent<GroupDataGridHeaderFilter> {
 
         protected final PropertyFilter<?> appliedFilter;
 
-        public ApplyEvent(DataGridHeaderFilter source, PropertyFilter<?> appliedFilter, boolean fromClient) {
+        public ApplyEvent(GroupDataGridHeaderFilter source, PropertyFilter<?> appliedFilter, boolean fromClient) {
             super(source, fromClient);
 
             this.appliedFilter = appliedFilter;
@@ -366,7 +366,7 @@ public class DataGridHeaderFilter extends Composite<HorizontalLayout>
             } else {
                 String message = String.format("%s is required for %s",
                         DataLoader.class.getSimpleName(),
-                        DataGridHeaderFilter.class.getSimpleName());
+                        GroupDataGridHeaderFilter.class.getSimpleName());
                 throw new IllegalArgumentException(message);
             }
 

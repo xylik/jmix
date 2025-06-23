@@ -21,12 +21,12 @@ import io.jmix.flowui.data.ValueSourceProvider;
 import io.jmix.flowui.data.value.BufferedContainerValueSource;
 import io.jmix.flowui.model.InstanceContainer;
 
-public class DataGridEditorValueSourceProvider<T> implements ValueSourceProvider {
+public class GroupDataGridEditorValueSourceProvider<T> implements ValueSourceProvider {
 
-    protected final DataGridEditor<T> editor;
+    protected final GroupDataGridEditor<T> editor;
     protected final InstanceContainer<T> container;
 
-    public DataGridEditorValueSourceProvider(DataGridEditor<T> editor, InstanceContainer<T> container) {
+    public GroupDataGridEditorValueSourceProvider(GroupDataGridEditor<T> editor, InstanceContainer<T> container) {
         this.editor = editor;
         this.container = container;
     }

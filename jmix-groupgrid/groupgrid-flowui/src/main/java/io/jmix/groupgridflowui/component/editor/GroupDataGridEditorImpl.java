@@ -34,7 +34,6 @@ import io.jmix.flowui.component.*;
 import io.jmix.flowui.component.SupportsStatusChangeHandler.StatusContext;
 import io.jmix.flowui.component.grid.DataGrid;
 import io.jmix.flowui.component.grid.DataGridDataProviderChangeObserver;
-import io.jmix.flowui.component.grid.EnhancedDataGrid;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.flowui.data.*;
 import io.jmix.flowui.kit.component.HasTitle;
@@ -59,10 +58,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
-        implements DataGridEditor<T>, DataGridDataProviderChangeObserver {
+public class GroupDataGridEditorImpl<T> extends AbstractGridExtension<T>
+        implements GroupDataGridEditor<T>, DataGridDataProviderChangeObserver {
 
-    private static final Logger log = LoggerFactory.getLogger(DataGridEditorImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GroupDataGridEditorImpl.class);
     private static final String EDITING = "_editing";
 
     protected ApplicationContext applicationContext;
@@ -77,7 +76,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
     protected boolean buffered;
     protected boolean saving;
 
-    protected Map<T, DataGridEditorValueSourceProvider<T>> itemValueSourceProviders;
+    protected Map<T, GroupDataGridEditorValueSourceProvider<T>> itemValueSourceProviders;
     protected Map<Column<T>, Component> columnEditorComponents;
 
     private EventBus eventBus;
@@ -90,7 +89,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
         return eventBus;
     }
 
-    public DataGridEditorImpl(Grid<T> grid, ApplicationContext applicationContext) {
+    public GroupDataGridEditorImpl(Grid<T> grid, ApplicationContext applicationContext) {
         super(grid);
         this.applicationContext = applicationContext;
 
@@ -103,18 +102,18 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
 
     @Override
     public Editor<T> setBinder(Binder<T> binder) {
-        throw new UnsupportedOperationException(DataGridEditor.class +
+        throw new UnsupportedOperationException(GroupDataGridEditor.class +
                 " doesn't support " + Binder.class.getSimpleName());
     }
 
     @Override
     public Binder<T> getBinder() {
-        throw new UnsupportedOperationException(DataGridEditor.class +
+        throw new UnsupportedOperationException(GroupDataGridEditor.class +
                 " doesn't support " + Binder.class.getSimpleName());
     }
 
     @Override
-    public DataGridEditor<T> setBuffered(boolean buffered) {
+    public GroupDataGridEditor<T> setBuffered(boolean buffered) {
         closeIfOpen();
 
         this.buffered = buffered;
@@ -325,7 +324,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
             itemValueSourceProviders = new WeakHashMap<>();
         }
 
-        DataGridEditorValueSourceProvider<T> valueSourceProvider = itemValueSourceProviders.get(item);
+        GroupDataGridEditorValueSourceProvider<T> valueSourceProvider = itemValueSourceProviders.get(item);
         if (valueSourceProvider != null) {
             return valueSourceProvider;
         }
@@ -333,7 +332,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
         log.debug("Creating a new item value source provider for: " + item);
 
         InstanceContainer<T> instanceContainer = createInstanceContainer(item);
-        valueSourceProvider = new DataGridEditorValueSourceProvider<>(this, instanceContainer);
+        valueSourceProvider = new GroupDataGridEditorValueSourceProvider<>(this, instanceContainer);
 
         itemValueSourceProviders.put(item, valueSourceProvider);
 
@@ -364,7 +363,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
         if (item != null) {
             log.debug("Clearing item value source provider for: " + item);
 
-            DataGridEditorValueSourceProvider<T> removed = itemValueSourceProviders.remove(item);
+            GroupDataGridEditorValueSourceProvider<T> removed = itemValueSourceProviders.remove(item);
             if (removed != null) {
                 detachItemContainer(removed);
             }
@@ -377,7 +376,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
         }
     }
 
-    protected void detachItemContainer(DataGridEditorValueSourceProvider<T> valueSourceProvider) {
+    protected void detachItemContainer(GroupDataGridEditorValueSourceProvider<T> valueSourceProvider) {
         valueSourceProvider.getContainer().setItem(null);
     }
 
@@ -429,7 +428,7 @@ public class DataGridEditorImpl<T> extends AbstractGridExtension<T>
             setColumnEditorComponent(column, property, generator);
         } else {
             throw new IllegalStateException("%s doesn't implement %s"
-                    .formatted(getGrid().getClass().getSimpleName(), EnhancedDataGrid.class.getSimpleName()));
+                    .formatted(getGrid().getClass().getSimpleName(), EnhancedGroupDataGrid.class.getSimpleName()));
         }
     }
 

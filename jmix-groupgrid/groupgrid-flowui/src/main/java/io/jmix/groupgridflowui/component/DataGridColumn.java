@@ -30,7 +30,7 @@ import io.jmix.core.common.util.Preconditions;
 import io.jmix.flowui.kit.meta.StudioIgnore;
 import io.jmix.flowui.sys.BeanUtil;
 import io.jmix.groupgridflowui.component.HierarchicalColumnRendererWrapper.HierarchicalDataGeneratorWrapper;
-import io.jmix.groupgridflowui.component.headerfilter.DataGridHeaderFilter;
+import io.jmix.groupgridflowui.component.headerfilter.GroupDataGridHeaderFilter;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -38,7 +38,7 @@ import org.springframework.context.ApplicationContextAware;
 
 public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationContextAware {
 
-    protected DataGridHeaderFilter dataGridFilter;
+    protected GroupDataGridHeaderFilter dataGridFilter;
     protected ApplicationContext applicationContext;
 
     /**
@@ -73,7 +73,7 @@ public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationCont
      */
     public void setFilterable(boolean filterable) {
         if (filterable && dataGridFilter == null) {
-            dataGridFilter = new DataGridHeaderFilter(new DataGridHeaderFilter.HeaderFilterContext(grid, this));
+            dataGridFilter = new GroupDataGridHeaderFilter(new GroupDataGridHeaderFilter.HeaderFilterContext(grid, this));
             super.setHeader(dataGridFilter);
 
             BeanUtil.autowireContext(applicationContext, dataGridFilter);
@@ -107,7 +107,7 @@ public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationCont
 
     @Override
     public Grid.Column<E> setHeader(Component headerComponent) {
-        if (dataGridFilter != null && !(headerComponent instanceof DataGridHeaderFilter)) {
+        if (dataGridFilter != null && !(headerComponent instanceof GroupDataGridHeaderFilter)) {
             dataGridFilter.setHeader(headerComponent);
             return this;
         }

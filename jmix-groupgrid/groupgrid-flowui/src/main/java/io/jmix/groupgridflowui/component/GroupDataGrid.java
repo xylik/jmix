@@ -33,8 +33,7 @@ import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.component.*;
 import io.jmix.flowui.component.grid.*;
 import io.jmix.flowui.kit.component.KeyCombination;
-import io.jmix.groupgridflowui.component.editor.DataGridEditor;
-import io.jmix.groupgridflowui.component.editor.DataGridEditorImpl;
+import io.jmix.groupgridflowui.component.editor.GroupDataGridEditor;
 import io.jmix.groupgridflowui.data.*;
 import io.jmix.groupgridflowui.delegate.AbstractGroupGridDelegate;
 import io.jmix.groupgridflowui.delegate.GroupGridDelegate;
@@ -401,7 +400,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         super.onDataProviderChange();
 
         if (isEditorCreated()) {
-            DataGridEditor<E> editor = getEditor();
+            GroupDataGridEditor<E> editor = getEditor();
             if (editor instanceof GroupDataGridDataProviderChangeObserver) {
                 ((GroupDataGridDataProviderChangeObserver) editor).dataProviderChanged();
             }
@@ -409,12 +408,12 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     }
 
     @Override
-    public DataGridEditor<E> getEditor() {
-        return ((DataGridEditor<E>) super.getEditor());
+    public GroupDataGridEditor<E> getEditor() {
+        return ((GroupDataGridEditor<E>) super.getEditor());
     }
 
     @Override
-    protected DataGridEditor<E> createEditor() {
+    protected GroupDataGridEditor<E> createEditor() {
         editorCreated = true;
         return gridDelegate.createEditor();
     }

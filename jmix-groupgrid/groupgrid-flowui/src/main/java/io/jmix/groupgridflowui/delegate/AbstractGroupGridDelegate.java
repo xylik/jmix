@@ -54,11 +54,11 @@ import io.jmix.flowui.kit.action.Action;
 import io.jmix.flowui.kit.component.HasActions;
 import io.jmix.flowui.kit.component.KeyCombination;
 import io.jmix.flowui.sys.BeanUtil;
-import io.jmix.groupgridflowui.component.editor.DataGridEditor;
+import io.jmix.groupgridflowui.component.editor.GroupDataGridEditor;
 import io.jmix.groupgridflowui.component.DataGridColumn;
 import io.jmix.groupgridflowui.component.EnhancedGroupDataGrid;
 import io.jmix.groupgridflowui.component.GroupDataGridDataProviderChangeObserver;
-import io.jmix.groupgridflowui.component.editor.DataGridEditorImpl;
+import io.jmix.groupgridflowui.component.editor.GroupDataGridEditorImpl;
 import io.jmix.groupgridflowui.data.HierarchicalGroupDataGridItems;
 import io.jmix.groupgridflowui.data.provider.GroupDataGridStringPresentationValueProvider;
 import io.jmix.groupgridflowui.kit.vaadin.grid.*;
@@ -265,7 +265,7 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
 
     protected void itemsValueChanged(DataGridItems.ValueChangeEvent<E> event) {
         if (itemIsBeingEdited(event.getItem())) {
-            DataGridEditor<E> editor = ((DataGridEditor<E>) getComponent().getEditor());
+            GroupDataGridEditor<E> editor = ((GroupDataGridEditor<E>) getComponent().getEditor());
             // Do not interrupt the save process
             if (editor.isBuffered() && !editor.isSaving()) {
                 editor.cancel();
@@ -882,8 +882,8 @@ public abstract class AbstractGroupGridDelegate<C extends Grid<E> & ListDataComp
         this.afterColumnSecurityApplyHandler = afterColumnSecurityApplyHandler;
     }
 
-    public DataGridEditorImpl<E> createEditor() {
-        DataGridEditorImpl<E> editor = new DataGridEditorImpl<>(component, applicationContext);
+    public GroupDataGridEditorImpl<E> createEditor() {
+        GroupDataGridEditorImpl<E> editor = new GroupDataGridEditorImpl<>(component, applicationContext);
         editor.addCloseListener(this::onGridEditorClose);
         return editor;
     }

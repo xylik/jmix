@@ -27,7 +27,6 @@ import org.springframework.lang.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-// TODO: pinyazhin, use interface from flowui
 /**
  * An editor in a Grid.
  * <p>
@@ -37,7 +36,7 @@ import java.util.function.Function;
  *
  * @param <T> the type of the row/item being edited
  */
-public interface DataGridEditor<T> extends Editor<T> {
+public interface GroupDataGridEditor<T> extends Editor<T> {
 
     @Nullable
     @Override

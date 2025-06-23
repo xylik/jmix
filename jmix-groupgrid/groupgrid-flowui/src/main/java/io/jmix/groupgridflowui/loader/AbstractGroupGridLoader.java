@@ -45,7 +45,7 @@ import io.jmix.flowui.xml.layout.inittask.AssignActionInitTask;
 import io.jmix.flowui.xml.layout.loader.AbstractComponentLoader;
 import io.jmix.flowui.xml.layout.loader.component.datagrid.RendererProvider;
 import io.jmix.flowui.xml.layout.support.ActionLoaderSupport;
-import io.jmix.groupgridflowui.component.editor.DataGridEditor;
+import io.jmix.groupgridflowui.component.editor.GroupDataGridEditor;
 import io.jmix.groupgridflowui.component.DataGridColumn;
 import io.jmix.groupgridflowui.component.EnhancedGroupDataGrid;
 import io.jmix.groupgridflowui.component.GroupDataGridContextMenuItemComponent;
@@ -517,8 +517,8 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
     @SuppressWarnings({"unchecked", "rawtypes"})
     protected void setDefaultEditComponent(DataGridColumn<?> column, String property) {
         Editor<?> editor = resultComponent.getEditor();
-        if (editor instanceof DataGridEditor) {
-            ((DataGridEditor) editor).initColumnDefaultEditorComponent(column, property);
+        if (editor instanceof GroupDataGridEditor) {
+            ((GroupDataGridEditor) editor).initColumnDefaultEditorComponent(column, property);
         }
     }
 
