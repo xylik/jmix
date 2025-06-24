@@ -152,13 +152,17 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
             return EntityValues.getValueEx(item, metaPropertyPath);
         } else if (property.get() instanceof String generatedProperty) {
             GroupPropertyValueProvider<T> valueProvider = groupPropertyValueProviders.get(generatedProperty);
-            if (valueProvider != null) {
-                return valueProvider.accept(new GroupPropertyValueProvider.GroupingPropertyContext<>(item, property));
-            } else {
+            if (valueProvider == null) {
                 log.warn("The group property value provider is not set for '{}' property." +
-                        " Use GroupDataGridItems#addGroupPropertyValueProvider() method", generatedProperty);
+                        " Please use GroupDataGridItems#addGroupPropertyValueProvider() method", generatedProperty);
+
+                return null;
             }
+            return valueProvider.accept(new GroupPropertyValueProvider.GroupingPropertyContext<>(item, property));
         }
+
+        log.warn("Unsupported group property value type: '{}'",  property.get().getClass());
+
         return null;
     }
 
@@ -311,11 +315,27 @@ public class ContainerGroupDataGridItems<T> extends ContainerDataGridItems<T> im
     }
 
     @Override
-    public void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
+    public void addGroupPropertyValueProvider(String customProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
         if (groupPropertyValueProviders == null) {
             groupPropertyValueProviders = new HashMap<>();
         }
-        groupPropertyValueProviders.put(generatedProperty, propertyValueProvider);
+        groupPropertyValueProviders.put(customProperty, propertyValueProvider);
+    }
+
+    @Override
+    public void removeGroupPropertyValueProvider(String customProperty) {
+        if (groupPropertyValueProviders == null) {
+            return;
+        }
+        groupPropertyValueProviders.remove(customProperty);
+    }
+
+    @Override
+    public void removeAllGroupPropertyValueProviders() {
+        if (groupPropertyValueProviders == null) {
+            return;
+        }
+        groupPropertyValueProviders.clear();
     }
 
     protected void refreshGroups() {

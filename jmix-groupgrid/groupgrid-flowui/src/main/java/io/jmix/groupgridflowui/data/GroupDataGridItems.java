@@ -98,12 +98,26 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
      */
     boolean containsGroup(GroupInfo groupId);
 
+    // TODO: pinyazhin, add these methods to GroupDataGrid?
     /**
      * Adds a value provider for a generated grouping property. This method enables defining
      * custom logic for computing property values during data grouping.
      *
-     * @param generatedProperty     name of the generated property to be used for grouping
+     * @param customProperty        the name of the custom property (which may not exist on an item) to be used for
+     *                              grouping
      * @param propertyValueProvider implementation of {@link GroupPropertyValueProvider}
      */
-    void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider);
+    void addGroupPropertyValueProvider(String customProperty, GroupPropertyValueProvider<T> propertyValueProvider);
+
+    /**
+     * Removes a value provider for a custom property that was previously added for grouping.
+     *
+     * @param customProperty the name of the custom property
+     */
+    void removeGroupPropertyValueProvider(String customProperty);
+
+    /**
+     * Removes all custom property value providers that were previously added for grouping.
+     */
+    void removeAllGroupPropertyValueProviders();
 }

@@ -24,7 +24,6 @@ import com.vaadin.flow.data.provider.hierarchy.HierarchicalQuery;
 import com.vaadin.flow.shared.Registration;
 import io.jmix.core.Metadata;
 import io.jmix.core.annotation.Internal;
-import io.jmix.core.entity.EntityValues;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.data.BindingState;
@@ -40,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Internal
@@ -55,8 +53,8 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     protected BiMap<T, GroupInfo> childGroupRows = HashBiMap.create();
     protected BiMap<T, GroupInfo> rootGroupRows = HashBiMap.create();
 
-    protected MetaClass metaClass;
-    protected Constructor<T> constructor;
+    protected MetaClass itemMetaClass;
+    protected Constructor<T> itemConstructor;
 
     public HierarchicalGroupDataGridItemsAdapter(GroupDataGridItems<T> dataGridItems, Metadata metadata) {
         this.dataGridItems = dataGridItems;
@@ -295,8 +293,18 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     }
 
     @Override
-    public void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
-        dataGridItems.addGroupPropertyValueProvider(generatedProperty, propertyValueProvider);
+    public void addGroupPropertyValueProvider(String customProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
+        dataGridItems.addGroupPropertyValueProvider(customProperty, propertyValueProvider);
+    }
+
+    @Override
+    public void removeGroupPropertyValueProvider(String customProperty) {
+        dataGridItems.removeGroupPropertyValueProvider(customProperty);
+    }
+
+    @Override
+    public void removeAllGroupPropertyValueProviders() {
+        dataGridItems.removeAllGroupPropertyValueProviders();
     }
 
     @Override
@@ -313,9 +321,10 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     }
 
     protected T createGroupRow(GroupInfo group) {
-        initGroupRowFactoryProperties(group);
+        initItemMetaClass(group);
+        initItemConstructor(group);
 
-        T item = createGroupRowInternal();
+        T item = createItem();
 
         if (item == null) {
             throw new IllegalStateException("Unable to create group row for " + group);
@@ -324,38 +333,44 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
         return item;
     }
 
-    @SuppressWarnings("unchecked")
-    protected void initGroupRowFactoryProperties(GroupInfo group) {
-        if (metaClass != null || constructor != null) {
+    protected void initItemMetaClass(GroupInfo group) {
+        if (itemMetaClass != null) {
             return;
         }
 
         if (dataGridItems instanceof EntityDataUnit entityDataUnit) {
-            metaClass = entityDataUnit.getEntityMetaClass();
+            itemMetaClass = entityDataUnit.getEntityMetaClass();
         } else if (group.getProperty().get() instanceof MetaPropertyPath metaPropertyPath) {
-            metaClass = metaPropertyPath.getMetaClass();
-        } else {
-            T item = getItemByGroup(group);
-            if (item != null) {
-                try {
-                    constructor = (Constructor<T>) ReflectionUtils.accessibleConstructor(item.getClass());
-                } catch (NoSuchMethodException e) {
-                    log.error("Unable to get default constructor for group row item", e);
-                }
+            itemMetaClass = metaPropertyPath.getMetaClass();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void initItemConstructor(GroupInfo group) {
+        if (itemConstructor != null) {
+            return;
+        }
+
+        T item = getItemByGroup(group);
+        if (item != null) {
+            try {
+                itemConstructor = (Constructor<T>) ReflectionUtils.accessibleConstructor(item.getClass());
+            } catch (NoSuchMethodException e) {
+                log.error("Unable to get default constructor for group row item", e);
             }
         }
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
-    protected T createGroupRowInternal() {
-        if (metaClass != null) {
-            return (T) metadata.create(metaClass);
+    protected T createItem() {
+        if (itemMetaClass != null) {
+            return (T) metadata.create(itemMetaClass);
         }
 
-        if (constructor != null) {
+        if (itemConstructor != null) {
             try {
-                return constructor.newInstance();
+                return itemConstructor.newInstance();
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 log.error("Unable to create a group row item", e);
                 return null;

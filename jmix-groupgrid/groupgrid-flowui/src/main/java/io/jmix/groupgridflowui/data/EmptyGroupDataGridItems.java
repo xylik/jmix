@@ -96,7 +96,17 @@ public class EmptyGroupDataGridItems<T> extends EmptyDataGridItems<T> implements
     }
 
     @Override
-    public void addGroupPropertyValueProvider(String generatedProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
+    public void addGroupPropertyValueProvider(String customProperty, GroupPropertyValueProvider<T> propertyValueProvider) {
+        // Do nothing.
+    }
+
+    @Override
+    public void removeGroupPropertyValueProvider(String customProperty) {
+        // Do nothing.
+    }
+
+    @Override
+    public void removeAllGroupPropertyValueProviders() {
         // Do nothing.
     }
 }
