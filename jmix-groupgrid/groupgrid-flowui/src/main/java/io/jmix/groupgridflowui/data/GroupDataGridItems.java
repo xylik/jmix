@@ -16,11 +16,14 @@
 
 package io.jmix.groupgridflowui.data;
 
+import com.vaadin.flow.shared.Registration;
 import io.jmix.flowui.data.grid.DataGridItems;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.EventObject;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface GroupDataGridItems<T> extends DataGridItems<T> {
 
@@ -35,7 +38,7 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
      *     </li>
      * </ul>
      */
-    void groupBy(Object[] properties);
+    void groupBy(List<GroupProperty> properties);
 
     /**
      * @return the list of root groups
@@ -98,7 +101,6 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
      */
     boolean containsGroup(GroupInfo groupId);
 
-    // TODO: pinyazhin, add these methods to GroupDataGrid?
     /**
      * Adds a value provider for a generated grouping property. This method enables defining
      * custom logic for computing property values during data grouping.
@@ -117,7 +119,18 @@ public interface GroupDataGridItems<T> extends DataGridItems<T> {
     void removeGroupPropertyValueProvider(String customProperty);
 
     /**
-     * Removes all custom property value providers that were previously added for grouping.
+     * Removes all custom property value providers previously added for grouping.
      */
     void removeAllGroupPropertyValueProviders();
+
+    // TODO: pinyazhin, get rid of
+    Registration addGroupByListener(Consumer<GroupByEvent<T>> listener);
+
+    // TODO: pinyazhin, get rid of
+    class GroupByEvent<T> extends EventObject {
+
+        public GroupByEvent(Object source) {
+            super(source);
+        }
+    }
 }

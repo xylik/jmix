@@ -16,12 +16,14 @@
 
 package io.jmix.groupgridflowui.data;
 
+import com.vaadin.flow.shared.Registration;
 import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.flowui.data.grid.EmptyDataGridItems;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EmptyGroupDataGridItems<T> extends EmptyDataGridItems<T> implements GroupDataGridItems<T> {
 
@@ -30,7 +32,7 @@ public class EmptyGroupDataGridItems<T> extends EmptyDataGridItems<T> implements
     }
 
     @Override
-    public void groupBy(@Nullable Object[] properties) {
+    public void groupBy(List<GroupProperty> properties) {
         // Do nothing
     }
 
@@ -108,5 +110,10 @@ public class EmptyGroupDataGridItems<T> extends EmptyDataGridItems<T> implements
     @Override
     public void removeAllGroupPropertyValueProviders() {
         // Do nothing.
+    }
+
+    @Override
+    public Registration addGroupByListener(Consumer<GroupByEvent<T>> listener) {
+        return () -> { /*Do nothing.*/ };
     }
 }

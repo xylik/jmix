@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.jmix.groupgridflowui.component;
+package io.jmix.groupgridflowui.component.renderer;
 
 import com.vaadin.flow.data.provider.DataGenerator;
 import com.vaadin.flow.data.provider.DataKeyMapper;
@@ -32,12 +32,13 @@ import java.util.Optional;
  * <p>
  * The {@link HierarchicalDataGeneratorWrapper} is used to skip generating data for group items
  * in non-hierarchical columns.
+ * <p>
+ * See {@code DataGridColumn.DataGeneratorWrapper}.
  *
  * @param <E> type of entity
- * @see DataGridColumn.DataGeneratorWrapper
  */
 @Internal
-public class HierarchicalColumnRendererWrapper<E> extends Renderer<E> {
+public class HierarchicalColumnRendererWrapper<E> extends AbstractGroupRenderer<E> {
 
     private final Renderer<E> renderer;
 
@@ -51,7 +52,6 @@ public class HierarchicalColumnRendererWrapper<E> extends Renderer<E> {
         return new Rendering<E>() {
             @Override
             public Optional<DataGenerator<E>> getDataGenerator() {
-
                 return rendering.getDataGenerator().isPresent()
                         ? Optional.of(new HierarchicalDataGeneratorWrapper<>(rendering.getDataGenerator().get()))
                         : rendering.getDataGenerator();

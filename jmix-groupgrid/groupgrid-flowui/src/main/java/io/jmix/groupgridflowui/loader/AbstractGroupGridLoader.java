@@ -222,7 +222,7 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         }
     }
 
-    protected void loadEditorActionsColumn(T resultComponent, Element columnElement) {
+    protected Column<?> loadEditorActionsColumn(T resultComponent, Element columnElement) {
         if (columnElement.elements().isEmpty()) {
             throw new GuiDevelopmentException("'editorActionsColumn' cannot be empty",
                     context, "Component ID", resultComponent.getId());
@@ -268,6 +268,7 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         loadResourceString(columnElement, "header", context.getMessageGroup(), editColumn::setHeader);
         loadResourceString(columnElement, "footer", context.getMessageGroup(), editColumn::setFooter);
         loadBoolean(columnElement, "visible", editColumn::setVisible);
+        return editColumn;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -352,7 +353,7 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
         }
     }
 
-    protected void loadColumn(T component, Element element, MetaClass metaClass,
+    protected DataGridColumn<?> loadColumn(T component, Element element, MetaClass metaClass,
                               boolean sortableColumns, boolean resizableColumns) {
         String property = loadString(element, "property")
                 .orElse(null);
@@ -395,6 +396,7 @@ public abstract class AbstractGroupGridLoader<T extends Grid<?> & EnhancedGroupD
 
         loadRenderer(element, metaPropertyPath)
                 .ifPresent(column::setRenderer);
+        return column;
     }
 
     @SuppressWarnings("unchecked")

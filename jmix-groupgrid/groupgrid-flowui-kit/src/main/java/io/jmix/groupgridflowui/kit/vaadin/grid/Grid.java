@@ -476,6 +476,9 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
         private SerializableFunction<T, String> partNameGenerator = item -> null;
         private SerializableFunction<T, String> tooltipGenerator = item -> null;
 
+        // Haulmont API
+        private SerializableFunction<T, ? extends Component> _componentCallback;
+
         /**
          * Constructs a new Column for use inside a Grid.
          *
@@ -1024,6 +1027,9 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
             }
             if (editorRenderer != null) {
                 editorRenderer.setComponentFunction(componentCallback);
+
+                // Haulmont API
+                _componentCallback = componentCallback;
             }
 
             return this;
@@ -1197,6 +1203,16 @@ public class Grid<T> extends Component implements HasStyle, HasSize,
         // Haulmont API
         protected Registration addDataGenerator(DataGenerator<T> dataGenerator) {
             return grid.addDataGenerator((DataGenerator) dataGenerator);
+        }
+
+        // Haulmont API
+        protected SortOrderProvider _getSortOrderProvider() {
+            return sortOrderProvider;
+        }
+
+        // Haulmont API
+        protected SerializableFunction<T, ? extends Component> _getEditorComponentCallback() {
+            return _componentCallback;
         }
     }
 

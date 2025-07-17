@@ -28,13 +28,8 @@ import io.jmix.core.metamodel.model.MetaClass;
 import io.jmix.core.metamodel.model.MetaPropertyPath;
 import io.jmix.flowui.data.BindingState;
 import io.jmix.flowui.data.EntityDataUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
-import org.springframework.util.ReflectionUtils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -45,7 +40,6 @@ import java.util.stream.Stream;
 public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvider<T, Void>
         implements HierarchicalGroupDataGridItems<T> {
 
-    private static final Logger log = LoggerFactory.getLogger(HierarchicalGroupDataGridItemsAdapter.class);
     protected final Metadata metadata;
     protected final GroupDataGridItems<T> dataGridItems;
 
@@ -54,16 +48,15 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     protected BiMap<T, GroupInfo> rootGroupRows = HashBiMap.create();
 
     protected MetaClass itemMetaClass;
-    protected Constructor<T> itemConstructor;
 
     public HierarchicalGroupDataGridItemsAdapter(GroupDataGridItems<T> dataGridItems, Metadata metadata) {
         this.dataGridItems = dataGridItems;
         this.metadata = metadata;
 
-        dataGridItems.addItemSetChangeListener(this::onItemSetChange);
+        dataGridItems.addGroupByListener(this::onGroupBy);
     }
 
-    protected void onItemSetChange(ItemSetChangeEvent<T> event) {
+    protected void onGroupBy(GroupByEvent<T> event) {
         updateGroupRows();
     }
 
@@ -140,7 +133,7 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     }
 
     @Override
-    public void groupBy(Object[] properties) {
+    public void groupBy(List<GroupProperty> properties) {
         dataGridItems.groupBy(properties);
     }
 
@@ -308,6 +301,11 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     }
 
     @Override
+    public Registration addGroupByListener(Consumer<GroupByEvent<T>> listener) {
+        return dataGridItems.addGroupByListener(listener);
+    }
+
+    @Override
     public GroupDataGridItems<T> getGroupDataGridItems() {
         return dataGridItems;
     }
@@ -322,7 +320,6 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
 
     protected T createGroupRow(GroupInfo group) {
         initItemMetaClass(group);
-        initItemConstructor(group);
 
         T item = createItem();
 
@@ -342,21 +339,10 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
             itemMetaClass = entityDataUnit.getEntityMetaClass();
         } else if (group.getProperty().get() instanceof MetaPropertyPath metaPropertyPath) {
             itemMetaClass = metaPropertyPath.getMetaClass();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void initItemConstructor(GroupInfo group) {
-        if (itemConstructor != null) {
-            return;
-        }
-
-        T item = getItemByGroup(group);
-        if (item != null) {
-            try {
-                itemConstructor = (Constructor<T>) ReflectionUtils.accessibleConstructor(item.getClass());
-            } catch (NoSuchMethodException e) {
-                log.error("Unable to get default constructor for group row item", e);
+        } else {
+            T item = getItemByGroup(group);
+            if (item != null) {
+                itemMetaClass = metadata.getClass(item.getClass());
             }
         }
     }
@@ -364,20 +350,7 @@ public class HierarchicalGroupDataGridItemsAdapter<T> extends AbstractDataProvid
     @Nullable
     @SuppressWarnings("unchecked")
     protected T createItem() {
-        if (itemMetaClass != null) {
-            return (T) metadata.create(itemMetaClass);
-        }
-
-        if (itemConstructor != null) {
-            try {
-                return itemConstructor.newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                log.error("Unable to create a group row item", e);
-                return null;
-            }
-        }
-
-        return null;
+        return itemMetaClass != null ? (T) metadata.create(itemMetaClass) : null;
     }
 
     protected Stream<T> collectOwnChildren(@Nullable T parent) {

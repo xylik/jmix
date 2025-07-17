@@ -41,16 +41,14 @@
                     <xs:element name="columns">
                         <xs:complexType>
                             <xs:sequence>
-                                <xs:element name="column" maxOccurs="unbounded" type="groupDataGridColumnComponent"/>
-                                <xs:element name="editorActionsColumn"
-                                            type="dataGridEditorActionsColumn"
+                                <xs:element name="column" maxOccurs="unbounded" type="columnComponentType"/>
+                                <xs:element name="editorActionsColumn" type="dataGridEditorActionsColumn"
                                             minOccurs="0"/>
-                                <xs:element name="groupColumn" minOccurs="0">
+                                <xs:element name="groupColumn" minOccurs="0" type="groupColumnComponentType"/>
+                                <xs:element name="groupBy">
                                     <xs:complexType>
                                         <xs:sequence>
-                                            <xs:element name="column"
-                                                        maxOccurs="unbounded"
-                                                        type="groupDataGridColumnComponent"/>
+                                            <xs:element name="column" maxOccurs="unbounded" type="columnComponentType"/>
                                         </xs:sequence>
                                     </xs:complexType>
                                 </xs:element>
@@ -100,7 +98,7 @@
     </xs:complexType>
 
     <!-- Column-->
-    <xs:complexType name="groupDataGridColumnComponent">
+    <xs:complexType name="columnComponentType">
         <xs:sequence minOccurs="0">
             <xs:element name="aggregation" type="gridAggregationType"/>
             <xs:group ref="layout:renderers"/>
@@ -150,6 +148,20 @@
             <xs:enumeration value="BOTTOM"/>
         </xs:restriction>
     </xs:simpleType>
+
+    <!--GroupColumn-->
+    <xs:complexType name="groupColumnComponentType">
+        <xs:attribute name="key" type="xs:string"/>
+        <xs:attribute name="width" type="xs:string"/>
+        <xs:attribute name="autoWidth" type="xs:boolean"/>
+        <xs:attribute name="resizable" type="xs:boolean"/>
+        <xs:attribute name="flexGrow" type="xs:integer"/>
+        <xs:attribute name="frozen" type="xs:boolean"/>
+        <xs:attribute name="header" type="layout:resourceString"/>
+        <xs:attribute name="footer" type="layout:resourceString"/>
+        <xs:attribute name="visible" type="xs:boolean"/>
+        <xs:attribute name="autoHidden" type="xs:boolean"/>
+    </xs:complexType>
 
     <!--Grid.EditorActionsColumn-->
     <xs:complexType name="dataGridEditorActionsColumn">

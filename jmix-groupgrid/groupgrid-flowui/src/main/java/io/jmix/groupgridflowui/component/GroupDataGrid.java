@@ -34,6 +34,7 @@ import io.jmix.flowui.component.*;
 import io.jmix.flowui.component.grid.*;
 import io.jmix.flowui.kit.component.KeyCombination;
 import io.jmix.groupgridflowui.component.editor.GroupDataGridEditor;
+import io.jmix.groupgridflowui.component.renderer.HierarchicalColumnRendererWrapper;
 import io.jmix.groupgridflowui.data.*;
 import io.jmix.groupgridflowui.delegate.AbstractGroupGridDelegate;
 import io.jmix.groupgridflowui.delegate.GroupGridDelegate;
@@ -66,6 +67,8 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> gridDelegate;
     protected JmixGroupGridContextMenu<E> contextMenu;
 
+    protected Map<String, GroupPropertyValueProvider<E>> propertyValueProviderMap;
+
     protected boolean editorCreated = false;
 
     @Override
@@ -83,6 +86,7 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
     protected void initComponent() {
         gridDelegate = createDelegate();
         gridDelegate.setAfterColumnSecurityApplyHandler(this::onAfterApplyColumnSecurity);
+        gridDelegate.setAfterColumnGroupingHandler(this::onAfterColumnGrouping);
         gridDelegate.setEmptyStateTextDelegate(super::setEmptyStateText);
         gridDelegate.setEmptyStateComponentDelegate(super::setEmptyStateComponent);
     }
@@ -272,71 +276,52 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return (DataGridColumn<E>) super.addColumn(propertyName);
     }
 
-    public void groupBy(MetaPropertyPath... properties) {
-        gridDelegate.groupBy(properties);
+    @SafeVarargs
+    public final void groupByColumns(Column<E>... columns) {
+        groupByColumnsList(Arrays.asList(columns));
     }
 
-    public void groupBy(Column<E>... columns) {
-        gridDelegate.groupBy(columns);
+    public void groupByColumnsList(List<Column<E>> columns) {
+        gridDelegate.groupByColumnsList(columns);
     }
 
-    public void groupBy(String... keys) {
-        gridDelegate.groupBy(keys);
+    public void groupByKeys(String... keys) {
+        groupByKeysList(Arrays.asList(keys));
+    }
+
+    public void groupByKeysList(List<String> keys) {
+        gridDelegate.groupByKeysList(keys);
     }
 
     public void ungroup() {
         gridDelegate.ungroup();
     }
 
-    public void ungroupBy(Column<E>... columns) {
-        gridDelegate.ungroupBy(columns);
+    @SafeVarargs
+    public final void ungroupByColumns(Column<E>... columns) {
+        ungroupByColumnsList(Arrays.asList(columns));
     }
 
-    public void ungroupBy(String... keys) {
-        gridDelegate.ungroupBy(keys);
+    public void ungroupByColumnsList(List<Column<E>> columns) {
+        gridDelegate.ungroupByColumnsList(columns);
     }
 
-    // TODO: pinyazhin, when add a column?
-    public Column<E> addHierarchyColumn() {
-        Column<E> column = addColumn(new HierarchicalColumnRendererWrapper<>(
-                LitRenderer.<E>of(
-                                "<vaadin-grid-tree-toggle @click=${onClick} .leaf=${!item.children} .expanded=${model.expanded} .level=${model.level}>"
-                                        + "${item.name}</vaadin-grid-tree-toggle>")
-                        .withProperty("children", item -> getDataCommunicator().hasChildren(item))
-                        .withProperty("name", item -> {
-                            String name = "";
-                            if (getDataCommunicator().hasChildren(item)) {
-                                HierarchicalGroupDataGridItems<E> items = gridDelegate.getItems();
-                                if (items != null) {
-                                    GroupInfo group = items.getGroupByItem(item);
-                                    if (group == null) {
-                                        return "";
-                                    }
-                                    if (group.getProperty().get() instanceof MetaPropertyPath propertyPath) {
-                                        name = metadataTools.format(group.getValue(), propertyPath.getMetaProperty());
-                                    } else if (group.getProperty().get() instanceof String) {
-                                        name = group.getValue().toString();
-                                    }
-                                }
-                            }
-                            return name;
-                        }).withFunction("onClick", item -> {
-                            if (getDataCommunicator().hasChildren(item)) {
-                                if (getDataCommunicator().isExpanded(item)) {
-                                    collapse(List.of(item), true);
-                                } else {
-                                    expand(List.of(item), true);
-                                }
-                            }
-                        })
-        ));
+    public void ungroupByKeys(String... keys) {
+        ungroupByKeysList(Arrays.asList(keys));
+    }
 
-        // TODO: rp
-/*        final SerializableComparator<T> comparator = (a, b) -> compareMaybeComparables(valueProvider.apply(a),
-                valueProvider.apply(b));
-        column.setComparator(comparator);*/
+    public void ungroupByKeysList(List<String> keys) {
+        gridDelegate.ungroupByKeysList(keys);
+    }
 
-        return column;
+    public GroupDataGridColumn<E> addGroupColumn(Renderer<E> renderer) {
+        return addGroupColumnInternal(renderer);
+    }
+
+    public GroupDataGridColumn<E> addGroupColumn() {
+        Renderer<E> renderer = createDefaultGroupRenderer();
+
+        return addGroupColumnInternal(renderer);
     }
 
     @Override
@@ -399,6 +384,10 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         return gridDelegate.getColumns();
     }
 
+    public List<Column<E>> getGroupingColumns() {
+        return gridDelegate.getGroupingColumns();
+    }
+
     @Nullable
     @Override
     public DataGridColumn<E> getColumnByKey(String columnKey) {
@@ -424,6 +413,48 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
      */
     public void setColumnPosition(Column<E> column, int index) {
         gridDelegate.setColumnPosition(column, index);
+    }
+
+    /**
+     * Adds a value provider for a generated column that can be participating in grouping.
+     * This method enables defining custom logic for computing values during data grouping.
+     *
+     * @param customProperty        the name of the custom property (which may not exist on an item) to be used for
+     *                              grouping
+     * @param propertyValueProvider implementation of {@link GroupPropertyValueProvider}
+     */
+    public void addGroupPropertyValueProvider(String customProperty, GroupPropertyValueProvider<E> propertyValueProvider) {
+        if (propertyValueProviderMap == null) {
+            propertyValueProviderMap = new HashMap<>();
+        }
+        propertyValueProviderMap.put(customProperty, propertyValueProvider);
+    }
+
+    public Map<String, GroupPropertyValueProvider<E>> getGroupPropertyValueProviders() {
+        if (propertyValueProviderMap == null) {
+            return Collections.emptyMap();
+        }
+        return propertyValueProviderMap;
+    }
+
+    /**
+     * Removes a value provider for a custom property that was previously added for grouping.
+     *
+     * @param customProperty the name of the custom property
+     */
+    public void removeGroupPropertyValueProvider(String customProperty) {
+        if (propertyValueProviderMap == null) {
+            return;
+        }
+        propertyValueProviderMap.remove(customProperty);
+    }
+
+    /**
+     * Removes all custom property value providers that were previously added for grouping.
+     */
+    public void removeAllGroupPropertyValueProviders() {
+        propertyValueProviderMap.clear();
+        propertyValueProviderMap = null;
     }
 
     @Override
@@ -535,6 +566,54 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
         gridDelegate.setEmptyStateComponent(emptyStateComponent);
     }
 
+    protected GroupDataGridColumn<E> addGroupColumnInternal(Renderer<E> renderer) {
+        DataGridColumn<E> column = addColumn(new HierarchicalColumnRendererWrapper<>(renderer));
+
+        // TODO: rp
+/*        final SerializableComparator<T> comparator = (a, b) -> compareMaybeComparables(valueProvider.apply(a),
+                valueProvider.apply(b));
+        column.setComparator(comparator);*/
+
+        if (column instanceof GroupDataGridColumn<E> groupColumn) {
+            return groupColumn;
+        }
+
+        throw new IllegalStateException("Column must be an instance of GroupDataGridColumn");
+    }
+
+    protected Renderer<E> createDefaultGroupRenderer() {
+        return LitRenderer.<E>of(
+                        "<vaadin-grid-tree-toggle @click=${onClick} .leaf=${!item.children} .expanded=${model.expanded} .level=${model.level}>"
+                                + "${item.name}</vaadin-grid-tree-toggle>")
+                .withProperty("children", item -> getDataCommunicator().hasChildren(item))
+                .withProperty("name", item -> {
+                    String name = "";
+                    if (getDataCommunicator().hasChildren(item)) {
+                        HierarchicalGroupDataGridItems<E> items = gridDelegate.getItems();
+                        if (items != null) {
+                            GroupInfo group = items.getGroupByItem(item);
+                            if (group == null) {
+                                return "";
+                            }
+                            if (group.getProperty().get() instanceof MetaPropertyPath propertyPath) {
+                                name = metadataTools.format(group.getValue(), propertyPath.getMetaProperty());
+                            } else if (group.getProperty().get() instanceof String) {
+                                name = group.getValue().toString();
+                            }
+                        }
+                    }
+                    return name;
+                }).withFunction("onClick", item -> {
+                    if (getDataCommunicator().hasChildren(item)) {
+                        if (getDataCommunicator().isExpanded(item)) {
+                            collapse(List.of(item), true);
+                        } else {
+                            expand(List.of(item), true);
+                        }
+                    }
+                });
+    }
+
     @SuppressWarnings("unchecked")
     protected GroupGridDelegate<E, HierarchicalGroupDataGridItems<E>> createDelegate() {
         return applicationContext.getBean(GroupGridDelegate.class, this);
@@ -552,5 +631,77 @@ public class GroupDataGrid<E> extends JmixGroupGrid<E> implements ListDataCompon
             // Remove column from an aggregation mechanism
             gridDelegate.removeAggregationInfo(context.getColumn());
         }
+    }
+
+    protected void onAfterColumnGrouping(GroupGridDelegate.ColumnGroupingContext<E> context) {
+        // If new columns are empty, we should "restore" all previous group columns
+        if (context.getColumns().isEmpty()) {
+            List<GroupDataGridColumn<E>> groupColumns = getGroupColumns();
+
+            addUngroupedColumns(context.getPreviousColumns(), groupColumns);
+
+            groupColumns.stream()
+                    .filter(GroupDataGridColumn::isAutoHidden)
+                    .forEach(c -> c.setVisible(false));
+        } else if (context.isGroupBy()) {
+            List<GroupDataGridColumn<E>> groupColumns = getGroupColumns();
+            List<Grid.Column<E>> ungroupedColumns = new ArrayList<>(context.getPreviousColumns());
+            ungroupedColumns.removeAll(context.getColumns());
+
+            addUngroupedColumns(ungroupedColumns, groupColumns);
+
+            context.getColumns().forEach(c -> {
+                if (getColumns().contains(c)) {
+                    super.removeColumn(c);
+                }
+            });
+
+            groupColumns.stream()
+                    .filter(GroupDataGridColumn::isAutoHidden)
+                    .forEach(c -> c.setVisible(true));
+        } else {
+            List<GroupDataGridColumn<E>> groupColumns = getGroupColumns();
+            List<Grid.Column<E>> ungroupedColumns = new ArrayList<>(context.getPreviousColumns());
+            ungroupedColumns.removeAll(context.getColumns());
+
+            addUngroupedColumns(ungroupedColumns, groupColumns);
+        }
+
+        getDataCommunicator().reset();
+    }
+
+    protected List<Grid.Column<E>> addUngroupedColumns(List<Grid.Column<E>> columnsToUngroup,
+                                                       List<GroupDataGridColumn<E>> groupColumns) {
+        List<Grid.Column<E>> reattachedColumns = reattachUngroupedColumns(columnsToUngroup);
+
+        int newPosition = 0;
+        if (!groupColumns.isEmpty() && groupColumns.get(0).isVisible()) {
+            newPosition = getAllColumns().indexOf(groupColumns.get(0)) + 1;
+        }
+
+        for (Grid.Column<E> reattachedColumn : reattachedColumns) {
+            setColumnPosition(reattachedColumn, newPosition);
+        }
+
+        return reattachedColumns;
+    }
+
+    protected List<Grid.Column<E>> reattachUngroupedColumns(List<Grid.Column<E>> columns) {
+        List<Grid.Column<E>> reattachedColumns = new ArrayList<>(columns.size());
+        for (Grid.Column<E> column : columns) {
+            Grid.Column<E> reattachedColumn = gridDelegate.reattachColumn(column);
+            reattachedColumns.add(reattachedColumn);
+        }
+        return reattachedColumns;
+    }
+
+    protected List<GroupDataGridColumn<E>> getGroupColumns() {
+        return getAllColumns().stream().filter(this::isGroupColumn)
+                .map(c -> (GroupDataGridColumn<E>) c)
+                .toList();
+    }
+
+    protected boolean isGroupColumn(Grid.Column<E> column) {
+        return column instanceof GroupDataGridColumn<E>;
     }
 }

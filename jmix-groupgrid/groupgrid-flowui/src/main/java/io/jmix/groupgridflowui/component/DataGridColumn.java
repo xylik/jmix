@@ -29,9 +29,10 @@ import io.jmix.core.annotation.Internal;
 import io.jmix.core.common.util.Preconditions;
 import io.jmix.flowui.kit.meta.StudioIgnore;
 import io.jmix.flowui.sys.BeanUtil;
-import io.jmix.groupgridflowui.component.HierarchicalColumnRendererWrapper.HierarchicalDataGeneratorWrapper;
+import io.jmix.groupgridflowui.component.renderer.HierarchicalColumnRendererWrapper.HierarchicalDataGeneratorWrapper;
 import io.jmix.groupgridflowui.component.headerfilter.GroupDataGridHeaderFilter;
 import io.jmix.groupgridflowui.kit.vaadin.grid.Grid;
+import io.jmix.groupgridflowui.kit.vaadin.grid.SortOrderProvider;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -144,6 +145,16 @@ public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationCont
         return super.addDataGenerator(dataGeneratorWrapper);
     }
 
+    @Override
+    protected SortOrderProvider _getSortOrderProvider() {
+        return super._getSortOrderProvider();
+    }
+
+    @Override
+    protected SerializableFunction<E, ? extends Component> _getEditorComponentCallback() {
+        return super._getEditorComponentCallback();
+    }
+
     /**
      * The data generator that wraps another one to manage generation data for group items.
      *
@@ -161,7 +172,7 @@ public class DataGridColumn<E> extends Grid.Column<E> implements ApplicationCont
         @Override
         public void generateData(E item, JsonObject jsonObject) {
             if (isGroupItem(item) && !(dataGenerator instanceof HierarchicalDataGeneratorWrapper)) {
-                // Skip generating data for group item
+                // Skip generating data for group item in a simple column
                 return;
             }
             dataGenerator.generateData(item, jsonObject);
